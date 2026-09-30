@@ -1,0 +1,1217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jacaranda, dating app prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Jost:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F4F1F6;--surface:#FCFBFD;--ink:#2B2433;--muted:#766C80;--line:#E4DDE9;
+  --jac:#5E4C8F;--jac-deep:#3D3163;--jac-soft:#EAE4F3;--on-jac:#FBF9FD;
+  --mari:#B08D57;--mari-soft:#F2EADC;--leaf:#4E7A65;--leaf-soft:#E4EEE8;--warn:#A63D3D;
+  --bloom:#8E7CC3;--bloom-2:#B7A8DE;--bloom-3:#D8CEEF;
+  --shadow:0 10px 30px -12px rgba(46,32,78,.22);
+  --serif:'Cormorant Garamond','Cormorant',Garamond,'Times New Roman',serif;
+  --sans:'Jost','Avenir Next','Segoe UI',system-ui,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#16131B;--surface:#201B27;--ink:#ECE6F1;--muted:#A69DB1;--line:#342D3D;
+    --jac:#B2A2DD;--jac-deep:#D3C8F0;--jac-soft:#2B2439;--on-jac:#1A1522;
+    --mari:#D4B47E;--mari-soft:#33291B;--leaf:#8DC0A6;--leaf-soft:#1F2F27;--warn:#E59A9A;
+    --bloom:#9D8BD2;--bloom-2:#7C6AB3;--bloom-3:#51457A;
+    --shadow:0 10px 30px -12px rgba(0,0,0,.6);color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16131B;--surface:#201B27;--ink:#ECE6F1;--muted:#A69DB1;--line:#342D3D;
+  --jac:#B2A2DD;--jac-deep:#D3C8F0;--jac-soft:#2B2439;--on-jac:#1A1522;
+  --mari:#D4B47E;--mari-soft:#33291B;--leaf:#8DC0A6;--leaf-soft:#1F2F27;--warn:#E59A9A;
+  --bloom:#9D8BD2;--bloom-2:#7C6AB3;--bloom-3:#51457A;
+  --shadow:0 10px 30px -12px rgba(0,0,0,.6);color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;font-weight:400;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:-.005em;margin:0;line-height:1.08}
+p{margin:0}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--jac);outline-offset:3px}
+img,svg{max-width:100%}
+
+.app{max-width:460px;margin:0 auto;min-height:100%;padding-bottom:110px}
+.app.no-nav{padding-bottom:36px}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 22px 12px}
+.wordmark{font-family:var(--serif);font-size:30px;font-weight:600;font-style:italic;color:var(--jac-deep);display:flex;align-items:center;gap:8px;letter-spacing:.005em;line-height:1}
+.wordmark .blossom{width:26px;height:26px;flex:none}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;padding:5px 12px;border-radius:999px;background:var(--jac-soft);color:var(--jac-deep);white-space:nowrap;letter-spacing:.01em}
+.pill.gold{background:var(--mari-soft);color:var(--ink)}
+.pill.leaf{background:var(--leaf-soft);color:var(--leaf)}
+.view{padding:6px 22px 28px}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+
+.btn{appearance:none;border:0;font-weight:500;letter-spacing:.02em;border-radius:14px;padding:15px 18px;cursor:pointer;background:var(--jac-deep);color:var(--on-jac);width:100%;font-size:16px;display:block;text-align:center;transition:transform .15s ease,background .15s ease}
+.btn:active{transform:scale(.985)}
+.btn.secondary{background:transparent;color:var(--jac-deep);box-shadow:inset 0 0 0 1px var(--line)}
+.btn.slim{padding:11px 16px;font-size:15px;width:auto;display:inline-block}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.row{display:flex;gap:10px;margin-top:8px}
+.row > *{flex:1}
+
+/* onboarding */
+.progress{height:2px;background:var(--line);margin:8px 22px 0;overflow:hidden;border-radius:2px}
+.progress i{display:block;height:100%;background:var(--jac);transition:width .35s ease}
+.hero{padding:30px 24px 24px;position:relative;overflow:hidden}
+.hero .branch{position:absolute;right:-24px;top:-6px;width:200px;height:200px;pointer-events:none;opacity:.95}
+.hero h1{font-size:50px;line-height:1.02;margin:150px 0 18px;color:var(--ink);font-weight:500;max-width:9.5em}
+.hero .lede{font-size:17px;color:var(--muted);max-width:32ch}
+.promise{margin:34px 0 32px;display:grid;gap:18px}
+.promise > div{display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:start}
+.promise b{display:block;font-weight:500}
+.promise .ic{width:40px;height:40px;border-radius:50%;background:var(--jac-soft);display:grid;place-items:center;font-size:17px}
+.ob h2{font-size:38px;margin:22px 0 8px;font-weight:500}
+.field{margin:24px 0}
+.lbl{display:block;font-weight:500;margin-bottom:10px}
+.hint{color:var(--muted);font-size:14px;margin-top:8px}
+.err{color:var(--warn);font-size:14px;font-weight:500;margin-top:10px}
+.note{background:var(--mari-soft);border-radius:14px;padding:13px 15px;font-size:14px;margin-top:12px;line-height:1.55}
+input[type=text],input[type=number],input[type=tel],textarea{width:100%;font:inherit;padding:13px 15px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--ink);transition:border-color .15s}
+input[type=text]:focus,input[type=number]:focus,input[type=tel]:focus,textarea:focus{border-color:var(--jac);outline:none}
+textarea{resize:vertical;min-height:88px}
+input[type=range]{width:100%;accent-color:var(--jac)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:9px 15px;font-size:15px;cursor:pointer;transition:background .15s,border-color .15s}
+.chip[aria-pressed="true"]{background:var(--jac-deep);border-color:var(--jac-deep);color:var(--on-jac)}
+.slider-labels{display:flex;justify-content:space-between;font-size:13px;color:var(--muted)}
+.ob-actions{display:flex;gap:10px;margin-top:34px}
+.ob-actions .btn.secondary{flex:0 0 100px}
+
+/* discover */
+.who{padding-top:8px}
+.who h1{font-size:52px;font-weight:600}
+.who .meta{color:var(--muted);margin-top:6px;line-height:1.7}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.why{display:flex;gap:18px;align-items:center;padding:18px 0;margin-top:14px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.ring{--p:80;width:76px;height:76px;border-radius:50%;background:conic-gradient(var(--jac) calc(var(--p) * 1%),var(--line) 0);display:grid;place-items:center;flex:none}
+.ring span{width:66px;height:66px;border-radius:50%;background:var(--bg);display:grid;place-items:center;font-family:var(--serif);font-weight:600;font-size:24px;line-height:1}
+.ring small{display:block;font-family:var(--sans);font-size:10px;font-weight:500;color:var(--muted);margin-top:3px;letter-spacing:.04em}
+.why ul{margin:0;padding:0;list-style:none;font-size:15px}
+.why li{position:relative;padding-left:16px}
+.why li::before{content:"";position:absolute;left:0;top:.62em;width:6px;height:6px;border-radius:50%;background:var(--bloom)}
+.why li+li{margin-top:5px}
+.photo{position:relative;border-radius:20px;overflow:hidden;aspect-ratio:4/5;margin:18px 0}
+.photo svg{display:block;width:100%;height:100%}
+.photo .cap{position:absolute;left:14px;top:12px;font-size:12px;font-weight:500;color:#fff;background:rgba(30,20,45,.32);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);padding:3px 10px;border-radius:999px}
+.heart{position:absolute;right:12px;bottom:12px;width:50px;height:50px;border-radius:50%;border:0;background:var(--surface);color:var(--jac);cursor:pointer;box-shadow:var(--shadow);display:grid;place-items:center;transition:transform .15s}
+.heart:active{transform:scale(.92)}
+.panel{padding:8px 0 10px;margin:22px 0;border-top:1px solid var(--line)}
+.panel h3{font-size:28px;font-weight:500;padding-top:14px;margin-bottom:4px}
+.vital{display:flex;gap:12px;padding:10px 0}
+.vital .k{width:26px;flex:none;text-align:center;opacity:.85}
+.passion{padding:10px 0}
+.passion b{display:block;font-weight:500}
+.passion p{color:var(--muted);font-size:15px}
+.passion .both{font-size:12px;font-weight:500;color:var(--mari);margin-left:8px;letter-spacing:.02em}
+.foodrow{display:flex;flex-wrap:wrap;gap:8px;padding:10px 0 6px}
+.food{font-size:14px;padding:6px 12px;border-radius:999px;border:1px solid var(--line)}
+.food.shared{background:var(--mari-soft);border-color:transparent;font-weight:500}
+.trait{padding:8px 0}
+.trait .tl{display:flex;justify-content:space-between;font-size:14px}
+.track{position:relative;height:4px;border-radius:2px;background:var(--line);margin:12px 8px 4px}
+.track i{position:absolute;top:50%;width:14px;height:14px;border-radius:50%;transform:translate(-50%,-50%);border:2px solid var(--bg)}
+.track .me{background:var(--jac)}
+.track .them{background:var(--mari)}
+.legend{display:flex;gap:18px;font-size:13px;color:var(--muted);padding:8px 0 6px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:0}
+.skip{position:fixed;bottom:calc(88px + env(safe-area-inset-bottom,0px));left:max(18px,calc(50% - 212px));width:56px;height:56px;border-radius:50%;border:1px solid var(--line);background:var(--surface);box-shadow:var(--shadow);cursor:pointer;z-index:25;display:grid;place-items:center;color:var(--muted)}
+.report{display:block;margin:26px auto 0;background:none;border:0;color:var(--muted);font-size:14px;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.empty{text-align:center;padding:70px 14px}
+.empty h2{font-size:36px;font-weight:500;margin-bottom:12px}
+.empty p{color:var(--muted);margin-bottom:26px}
+
+/* nav */
+.nav{position:fixed;bottom:0;left:0;right:0;z-index:30;background:color-mix(in srgb,var(--surface) 90%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom,0px)}
+.nav-inner{max-width:460px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr)}
+.nav button{background:none;border:0;padding:10px 0 12px;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:12px;font-weight:500;letter-spacing:.02em;color:var(--muted);cursor:pointer;position:relative}
+.nav button[aria-current="page"]{color:var(--jac-deep)}
+.nav button[aria-current="page"]::after{content:"";position:absolute;top:0;left:50%;width:22px;height:2px;border-radius:2px;background:var(--jac);transform:translateX(-50%)}
+.nav .badge{position:absolute;top:6px;left:calc(50% + 8px);min-width:17px;height:17px;border-radius:9px;background:var(--mari);color:#fff;font-size:11px;display:grid;place-items:center;padding:0 4px}
+
+/* sheet, overlay, toast */
+.backdrop{position:fixed;inset:0;background:rgba(28,20,40,.45);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);z-index:50;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--bg);width:100%;max-width:460px;border-radius:26px 26px 0 0;padding:24px 22px calc(24px + env(safe-area-inset-bottom,0px));max-height:90vh;overflow:auto}
+.sheet h2{font-size:32px;font-weight:500;margin-bottom:6px}
+.quote{font-family:var(--serif);font-size:22px;line-height:1.35;border-left:2px solid var(--bloom);padding:4px 0 4px 16px;margin:16px 0 20px}
+.match{position:fixed;inset:0;z-index:60;background:radial-gradient(120% 80% at 50% 0%,#4A3A78 0%,#2A2140 60%,#1D1730 100%);color:#F5F1FA;display:flex;flex-direction:column;justify-content:center;padding:32px 28px calc(32px + env(safe-area-inset-bottom,0px));text-align:center;overflow:hidden}
+.match h1{font-size:64px;font-style:italic;font-weight:500;color:#F5F1FA;margin-bottom:16px}
+.match p{font-size:18px;opacity:.85;max-width:30ch;margin:0 auto 36px}
+.match .btn{max-width:360px;margin:0 auto 10px;background:#F5F1FA;color:#2A2140}
+.match .btn.secondary{background:transparent;color:#F5F1FA;box-shadow:inset 0 0 0 1px rgba(245,241,250,.35)}
+.petal{position:absolute;top:-24px;width:13px;height:15px;border-radius:60% 60% 50% 50%/70% 70% 40% 40%;background:#B7A8DE;animation:fall 4.2s ease-in forwards;opacity:.9}
+.petal:nth-child(3n){background:#8E7CC3}
+.petal:nth-child(4n){background:#D8CEEF}
+@keyframes fall{to{transform:translate(40px,112vh) rotate(420deg)}}
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--jac-deep);color:var(--on-jac);padding:12px 18px;border-radius:14px;font-size:15px;z-index:70;max-width:calc(100% - 44px);box-shadow:var(--shadow)}
+
+/* matches & chat */
+.list-item{display:flex;align-items:center;gap:14px;width:100%;background:none;border:0;border-bottom:1px solid var(--line);padding:14px 0;text-align:left;cursor:pointer}
+.avatar{width:56px;height:56px;border-radius:50%;overflow:hidden;flex:none}
+.avatar svg,.avatar img{width:100%;height:100%;display:block;object-fit:cover}
+.list-item b{display:block;font-family:var(--serif);font-size:24px;font-weight:600;line-height:1.2}
+.list-item span{font-size:14px;color:var(--muted);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:260px}
+.back{background:none;border:0;cursor:pointer;display:flex;align-items:center;gap:6px;font-weight:500;color:var(--jac-deep);padding:6px 0}
+.section-title{font-size:34px;font-weight:500;margin:26px 0 6px}
+.plan{background:var(--surface);border-radius:20px;padding:20px;margin:14px 0;border:1px solid var(--line)}
+.plan.chosen{border-color:var(--mari);box-shadow:inset 0 0 0 1px var(--mari)}
+.plan h3{font-size:26px;font-weight:600}
+.plan .when{font-size:14px;color:var(--muted);margin:4px 0 10px}
+.stop{display:grid;grid-template-columns:30px 1fr auto;gap:10px;padding:12px 0;border-top:1px solid var(--line);align-items:start}
+.stop .e{font-size:19px;line-height:1.4}
+.stop b{display:block;font-weight:500}
+.stop small{color:var(--muted);display:block;font-size:13px}
+.stop .cost{font-weight:500;white-space:nowrap}
+.plan .total{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--ink);padding-top:12px;margin-top:2px;font-weight:500}
+.plan .whyline{font-size:14px;color:var(--jac-deep);font-style:italic;margin:4px 0 12px}
+.msgs{display:flex;flex-direction:column;gap:8px;margin:18px 0}
+.msg{max-width:82%;padding:11px 15px;border-radius:20px;font-size:15px}
+.msg.me{align-self:flex-end;background:var(--jac-deep);color:var(--on-jac);border-bottom-right-radius:6px}
+.msg.them{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:6px}
+.msg .ctx{display:block;font-size:13px;opacity:.8;font-style:italic;margin-bottom:4px}
+.composer{display:flex;gap:8px;margin-top:10px;align-items:center}
+.composer input{flex:1}
+.safety{background:var(--leaf-soft);border-radius:18px;padding:16px 18px;font-size:14px;margin:18px 0}
+.safety b{color:var(--leaf);font-weight:500}
+.safety ul{margin:6px 0 0;padding-left:18px}
+.me-head{display:flex;gap:16px;align-items:center;margin:12px 0 6px}
+.me-head .avatar{width:78px;height:78px}
+.me-head h1{font-size:40px}
+.brand-opt{display:block;width:100%;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:8px 0;cursor:pointer}
+
+/* gallery, voice, ratings */
+.gallery{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;margin:18px -22px;padding:0 22px;scrollbar-width:none}
+.gallery::-webkit-scrollbar{display:none}
+.gallery .photo{flex:0 0 86%;scroll-snap-align:center;margin:0}
+.photo img{display:block;width:100%;height:100%;object-fit:cover}
+.voice{border-top:1px solid var(--line);padding:20px 0 18px;margin:8px 0;position:relative}
+.voice .q{font-size:14px;font-weight:500;color:var(--muted);letter-spacing:.02em;padding-right:60px}
+.voice.big{border:0;background:linear-gradient(150deg,#4B3B7A,#2E2448);color:#F5F1FA;border-radius:24px;padding:22px 22px 20px;margin:20px 0;overflow:hidden}
+.voice.big::before{content:"";position:absolute;right:-40px;top:-40px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle,rgba(183,168,222,.35),transparent 70%)}
+.voice.big .q{color:#F5F1FA;opacity:.8;font-family:var(--serif);font-style:italic;font-size:22px;letter-spacing:0}
+.voice.big .play{background:#F5F1FA;color:#2E2448}
+.voice.big .bars rect{fill:rgba(255,255,255,.3)}
+.voice.big .player.on .bars rect{fill:#D8CEEF}
+.voice.big .secs{color:#F5F1FA;opacity:.75}
+.voice.big .pill{background:rgba(255,255,255,.12);color:#F5F1FA}
+.voice.big .transcript{color:#F5F1FA}
+.voice.big .btn.secondary{color:#F5F1FA;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3)}
+.player{display:flex;align-items:center;gap:12px;margin-top:12px;position:relative}
+.play{width:46px;height:46px;border-radius:50%;border:0;background:var(--jac-deep);color:var(--on-jac);display:grid;place-items:center;cursor:pointer;flex:none}
+.bars{flex:1;height:34px;display:block}
+.bars rect{fill:var(--line)}
+.player.on .bars rect{fill:var(--jac);animation:pulse 1s ease-in-out infinite alternate}
+.player.on .bars rect:nth-child(3n){animation-delay:.2s}
+.player.on .bars rect:nth-child(3n+1){animation-delay:.4s}
+@keyframes pulse{from{opacity:.35}to{opacity:1}}
+.secs{font-size:14px;font-weight:500;color:var(--muted);min-width:34px;text-align:right;font-variant-numeric:tabular-nums}
+.transcript{font-family:var(--serif);font-size:26px;line-height:1.25;margin-top:14px;font-weight:500}
+.voice .heart{bottom:auto;top:14px;right:0;width:44px;height:44px}
+.voice.big .heart{right:14px;background:#F5F1FA;color:#4B3B7A}
+.vibes{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px;position:relative}
+.scorebar{display:grid;grid-template-columns:1.4fr 1fr 1fr;margin-top:18px;border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.score{padding:12px 14px}
+.score+.score{border-left:1px solid var(--line)}
+.score b{display:block;font-size:32px;font-family:var(--serif);font-weight:600;line-height:1}
+.score span{font-size:12px;color:var(--muted);letter-spacing:.02em}
+.score.main{background:var(--mari-soft)}
+.score.main b{color:var(--ink)}
+.rate{border-top:1px solid var(--line);padding:8px 0 4px;margin:22px 0 0}
+.rate h3{font-size:28px;font-weight:500;padding-top:14px}
+.ten{display:grid;grid-template-columns:repeat(10,1fr);gap:4px;margin-top:6px}
+.ten button{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 0;font-weight:500;font-size:14px;cursor:pointer;font-variant-numeric:tabular-nums}
+.ten button[aria-pressed="true"]{background:var(--mari);border-color:var(--mari);color:#fff}
+.standouts{display:flex;gap:10px;overflow-x:auto;margin:4px -22px 16px;padding:2px 22px;scrollbar-width:none}
+.standouts::-webkit-scrollbar{display:none}
+.so{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 14px 5px 5px;display:flex;align-items:center;gap:9px;cursor:pointer}
+.so .avatar{width:38px;height:38px}
+.so b{font-size:15px;font-weight:500;display:block;line-height:1.2}
+.so span{font-size:12px;color:var(--mari);display:block;line-height:1.2}
+.so-title{font-family:var(--serif);font-style:italic;font-size:20px;margin:6px 0 10px;color:var(--jac-deep)}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.pgrid .cell{position:relative;aspect-ratio:4/5;border-radius:12px;overflow:hidden;background:var(--surface)}
+.pgrid .cell img,.pgrid .cell svg{width:100%;height:100%;object-fit:cover;display:block}
+.pgrid .rm{position:absolute;top:5px;right:5px;width:26px;height:26px;border-radius:50%;border:0;background:rgba(30,20,45,.55);color:#fff;cursor:pointer;font-size:13px;line-height:1}
+.pgrid .add{border:1px dashed var(--muted);display:grid;place-items:center;color:var(--muted);font-weight:500;cursor:pointer;font-size:14px;text-align:center;padding:6px;background:transparent}
+.recbox{background:var(--jac-soft);border-radius:24px;padding:28px 22px;text-align:center;margin:20px 0}
+.recbtn{width:88px;height:88px;border-radius:50%;border:0;background:var(--jac-deep);color:var(--on-jac);display:grid;place-items:center;margin:0 auto 14px;cursor:pointer}
+.recbtn.on{background:#A63D3D;color:#fff;animation:rec 1.3s ease-in-out infinite}
+@keyframes rec{50%{box-shadow:0 0 0 14px rgba(166,61,61,.15)}}
+.rectime{font-family:var(--serif);font-size:34px;font-weight:600;font-variant-numeric:tabular-nums}
+.msg.voice-msg{min-width:230px}
+.msg.voice-msg .player{margin-top:0}
+.msg.me .play{background:var(--on-jac);color:var(--jac-deep)}
+.msg.me .bars rect{fill:rgba(255,255,255,.4)}
+.msg .tx{display:block;font-size:13px;opacity:.8;margin-top:6px}
+.mic{width:48px;height:48px;border-radius:50%;border:0;background:var(--jac-deep);color:var(--on-jac);display:grid;place-items:center;cursor:pointer;flex:none}
+.mic.on{background:#A63D3D;color:#fff}
+.gate{text-align:center;padding:60px 24px}
+.gate h1{font-size:42px;font-weight:500;margin:20px 0 14px}
+@media (prefers-reduced-motion:reduce){
+  .petal{display:none}
+  .progress i,.btn,.heart,.chip{transition:none}
+  .player.on .bars rect,.recbtn.on{animation:none}
+}
+/* v3: sign-up, verification, privacy */
+.stepcount{margin:12px 22px 0;font-size:13px;color:var(--muted);letter-spacing:.02em}
+.phone{display:flex;align-items:stretch;border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}
+.phone span{padding:13px 12px 13px 15px;color:var(--muted);border-right:1px solid var(--line)}
+.phone input{border:0!important;border-radius:0!important;flex:1;min-width:0;background:transparent}
+.phone:focus-within{border-color:var(--jac)}
+h3.sub{font-size:28px;font-weight:500;margin:30px 0 0;padding-top:18px;border-top:1px solid var(--line)}
+.pose{font-size:44px;margin-bottom:8px}
+.spinner{width:44px;height:44px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--jac);margin:6px auto 14px;animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.verify-done{text-align:center;padding:26px 10px;background:var(--leaf-soft);border-radius:24px;margin:20px 0}
+.verify-done h3{font-size:30px;margin:8px 0 6px}
+.vbig{display:inline-grid;place-items:center;width:58px;height:58px;border-radius:50%;background:var(--leaf);color:#fff;font-size:28px}
+.photo.locked svg,.photo.locked img{filter:blur(22px) saturate(.7);transform:scale(1.15)}
+.lockmsg{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#fff;font-size:15px;padding:30px;line-height:1.6;background:rgba(30,20,45,.25)}
+.privnote{margin-top:16px;font-size:14px;color:var(--muted);padding:12px 14px;border:1px dashed var(--line);border-radius:14px}
+.nudge{display:flex;gap:14px;align-items:center;width:100%;text-align:left;background:var(--jac-soft);border:0;border-radius:18px;padding:12px 14px;margin:4px 0 16px;cursor:pointer}
+.nudge b{display:block;font-weight:500}
+.nudge > span:last-child > span{font-size:13px;color:var(--muted);display:block}
+.nring{--p:40;width:46px;height:46px;border-radius:50%;background:conic-gradient(var(--jac) calc(var(--p) * 1%),var(--line) 0);display:grid;place-items:center;flex:none}
+.nring span{width:38px;height:38px;border-radius:50%;background:var(--jac-soft);display:grid;place-items:center;font-size:12px;font-weight:500}
+.meter{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:6px}
+.meter i{display:block;height:100%;background:var(--jac)}
+.checklist{margin-top:10px}
+.ci{display:flex;align-items:center;gap:12px;width:100%;padding:12px 0;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;cursor:pointer;font-size:15px}
+.ci span{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--jac);color:var(--jac);flex:none;font-size:15px}
+.ci.done{color:var(--muted);cursor:default}
+.ci.done span{background:var(--leaf);border-color:var(--leaf);color:#fff;font-size:13px}
+.toggle{display:flex;align-items:center;justify-content:space-between;gap:16px;width:100%;padding:14px 0;border:0;border-bottom:1px solid var(--line);background:none;text-align:left;cursor:pointer}
+.toggle b{display:block;font-weight:500}
+.toggle > span > span{font-size:13px;color:var(--muted);display:block}
+.toggle i{width:46px;height:28px;border-radius:14px;background:var(--line);position:relative;flex:none;transition:background .2s}
+.toggle i::after{content:"";position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:transform .2s}
+.toggle[aria-pressed="true"] i{background:var(--jac)}
+.toggle[aria-pressed="true"] i::after{transform:translateX(18px)}
+.panel .btn.slim{margin:4px 0 10px}
+@media (prefers-reduced-motion:reduce){.spinner{animation-duration:3s}.toggle i,.toggle i::after{transition:none}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+/* ---------- Data ---------- */
+const CLUSTERS={
+  ind:'Indiranagar & Domlur', kor:'Koramangala & HSR', jay:'Jayanagar & JP Nagar',
+  mal:'Malleshwaram & Rajajinagar', cbd:'MG Road & Richmond Town', wf:'Whitefield & Marathahalli'
+};
+const T={
+  ind:{ind:10,kor:30,jay:45,mal:40,cbd:20,wf:40},
+  kor:{ind:30,kor:10,jay:30,mal:50,cbd:30,wf:55},
+  jay:{ind:45,kor:30,jay:10,mal:40,cbd:30,wf:70},
+  mal:{ind:40,kor:50,jay:40,mal:10,cbd:25,wf:65},
+  cbd:{ind:20,kor:30,jay:30,mal:25,cbd:10,wf:50},
+  wf:{ind:40,kor:55,jay:70,mal:65,cbd:50,wf:15}
+};
+const FOODS=[
+  {id:'coffee',label:'Filter coffee & cafes',e:'☕'},{id:'icecream',label:'Ice cream & desserts',e:'🍨'},
+  {id:'north',label:'North Indian',e:'🍛'},{id:'south',label:'South Indian',e:'🥞'},
+  {id:'italian',label:'Italian',e:'🍝'},{id:'asian',label:'Pan-Asian',e:'🍜'},
+  {id:'brunch',label:'Brunch spots',e:'🥐'},{id:'brewery',label:'Craft beer',e:'🍺'}
+];
+const FOOD=Object.fromEntries(FOODS.map(f=>[f.id,f]));
+const FOOD_LOW={coffee:'filter coffee',icecream:'desserts',north:'North Indian',south:'South Indian',italian:'Italian',asian:'Pan-Asian',brunch:'brunch',brewery:'craft beer'};
+const INTENT_PHRASE={'Long-term relationship':'Both looking for a long-term relationship','Marriage-minded':'Both marriage-minded','Open to see where it goes':'Both open to see where it goes'};
+const PASSIONS=[
+  {id:'running',label:'Running',e:'🏃',ph:'e.g. 10K on Sundays at Cubbon Park'},
+  {id:'gym',label:'Gym & fitness',e:'🏋️',ph:'e.g. Strength training, mornings'},
+  {id:'cycling',label:'Cycling',e:'🚴',ph:'e.g. Weekend rides to Nandi Hills'},
+  {id:'trekking',label:'Trekking',e:'⛰️',ph:'e.g. Western Ghats every long weekend'},
+  {id:'livemusic',label:'Live music',e:'🎶',ph:'e.g. Indie gigs, Carnatic concerts'},
+  {id:'instrument',label:'Plays an instrument',e:'🎸',ph:'e.g. Acoustic guitar, 8 years'},
+  {id:'dance',label:'Dancing',e:'💃',ph:'e.g. Salsa and bachata socials'},
+  {id:'creator',label:'Content creation',e:'📱',ph:'e.g. Food reels about Bengaluru'},
+  {id:'photo',label:'Photography',e:'📷',ph:'e.g. Street photography'},
+  {id:'reading',label:'Reading',e:'📚',ph:'e.g. Fiction, one book a week'},
+  {id:'cooking',label:'Cooking',e:'🍳',ph:'e.g. Kerala food, Sunday feasts'},
+  {id:'travel',label:'Travel',e:'✈️',ph:'e.g. Slow trips, small towns'}
+];
+const PASS=Object.fromEntries(PASSIONS.map(p=>[p.id,p]));
+const INTENTS=['Long-term relationship','Marriage-minded','Open to see where it goes'];
+const KIDS=['Want kids',"Don't want kids",'Open'];
+const DIETS=['Veg','Eggetarian','Non-veg'];
+const DRINKS=['Never','Socially'];
+const SMOKE=['No','Yes'];
+const LANGS=['English','Kannada','Hindi','Tamil','Telugu','Malayalam','Bengali','Marathi','Urdu'];
+const COLLEGES=['IIT','IIM','IISc Bangalore','NIT','BITS Pilani','IIIT (Hyderabad, Bangalore, Delhi)','NLSIU or NLU','AIIMS','ISB','XLRI','FMS Delhi',"SRCC or St. Stephen's",'Other college'];
+const PACKAGES=['Below ₹25 LPA','₹25–40 LPA','₹40–60 LPA','₹60 LPA+'];
+const MIN_PACKAGE_LABEL='₹25 LPA';
+const VIBES=['Warm','Funny','Confident','Calm','Articulate','Energetic'];
+const MIN_PHOTOS=3, MAX_PHOTOS=15, MIN_RATINGS_TO_SHOW=20, TOP_RATED=8.4;
+const TRAITS=[
+  {label:'Openness',s:'I love trying new places, food and ideas.'},
+  {label:'Reliability',s:'I plan ahead and keep my commitments.'},
+  {label:'Social energy',s:'A packed social weekend energises me.'},
+  {label:'Warmth',s:"I'd rather find common ground than win an argument."},
+  {label:'Calm',s:'I stay calm when plans fall apart.'}
+];
+
+
+/* Sample venues: the real list will be curated by hand */
+const NAME_POOL={
+  coffee:['Kaapi Katte','Decoction House','Morning Tumbler','Filter Stories','Second Brew','Bean Street'],
+  icecream:['Kulfi & Co','Gelato Gully','Churn Room','Softie Corner','Scoop Theory','Frost Parlour'],
+  dessert:['Sugar Loaf','Mysore Pak Studio','Bake Room','Payasam Bar','Crumb Club','Honey Cake Co'],
+  north:['Tandoor Tales','Haveli Kitchen','Makhani Mile','Amritsari Angan','Rotiwala','Lassi & Lamp'],
+  south:['Benne Dose Mane','Tiffin Theatre','Idli Arcade','Thatte Club','Rava Room','Coastal Plate'],
+  italian:['Trattoria Nove','Basil & Brick','Casa Pomodoro','Little Napoli','Olive Court','Forno Blu'],
+  asian:['Wok Republic','Bao Lane','Soy & Sesame','Noodle Yard','Tokyo Terrace','Lemongrass Hall'],
+  brunch:['Sunday Table','Toast & Tales','The Porch','Late Riser','Eggs Benny Club','Hollandaise House'],
+  brewery:['Hop Street Brewing','Barrel Room','Copper Kettle','Malt Yard','Tap Theory','Foam House']
+};
+const BASE_COST={coffee:550,icecream:350,dessert:450,north:1350,south:650,italian:1550,asian:1450,brunch:1500,brewery:1750};
+const BLURB={coffee:'Quiet corners, strong filter coffee',icecream:'Walk-in parlour, easy to linger',dessert:'Small-batch desserts',north:'Tandoor, dal makhani, generous portions',south:'Classic tiffin, good veg menu',italian:'Wood-fired pizza, fresh pasta',asian:'Noodles, bao, dumplings',brunch:'All-day breakfast, calm on weekends',brewery:'House beers, big shared tables'};
+const VENUES=[];
+Object.keys(CLUSTERS).forEach((c,ci)=>{
+  Object.keys(NAME_POOL).forEach(t=>{
+    VENUES.push({type:t,cluster:c,name:NAME_POOL[t][ci],cost:BASE_COST[t]+[0,50,-50,100,-100,0][ci],blurb:BLURB[t],pureVeg:['south','dessert','icecream'].includes(t),sample:true});
+  });
+});
+[
+  ['lake','cbd','Cubbon Park',0,'Shaded paths, easy 3 km loop'],
+  ['lake','jay','Lalbagh Botanical Garden',60,'Glasshouse, lake, small entry fee'],
+  ['lake','mal','Sankey Tank',0,'Lakeside walkway, great at sunset'],
+  ['lake','kor','Agara Lake',0,'Flat loop, popular with runners'],
+  ['lake','ind','Ulsoor Lake',0,'Lakeside path, calm mornings'],
+  ['lake','wf','Kundalahalli Lake',0,'Restored lake with a walking track'],
+  ['gig','ind','The Loft Sessions',1000,'Small-room indie gigs, cover for two'],
+  ['gig','cbd','Church Street Live Room',1000,'Jazz and acoustic nights'],
+  ['gig','kor','Basement Jam Club',900,'Open mics midweek, bands on weekends'],
+  ['gig','jay','Sabha Sessions',800,'Carnatic and fusion evenings'],
+  ['dance','ind','Salsa Social Night',1100,'Beginner class, then open floor'],
+  ['dance','kor','Bachata Room',1100,'Thursday socials, friendly crowd'],
+  ['dance','cbd','Bollywood Jam Studio',1000,'One-hour drop-in class for two'],
+  ['photowalk','mal','Malleshwaram heritage photo walk',0,'Old houses, 8th Cross market'],
+  ['photowalk','jay','Basavanagudi temple street walk',0,'Bull Temple, Gandhi Bazaar'],
+  ['photowalk','cbd','Cubbon Park and High Court walk',0,'Red buildings, great morning light'],
+  ['climb','kor','Boulder Box',1200,'Bouldering session for two, shoes included'],
+  ['climb','ind','Grip Climbing Gym',1200,'Beginner-friendly walls'],
+  ['climb','wf','Summit Wall',1100,'Bouldering and a small cafe'],
+  ['hills','out','Nandi Hills sunrise ride',400,'About 60 km out. Leave by 4:30 am.']
+].forEach(([type,cluster,name,cost,blurb])=>VENUES.push({type,cluster,name,cost,blurb,pureVeg:false,sample:!['lake','hills'].includes(type)}));
+const VENUE_EMOJI={coffee:'☕',icecream:'🍨',dessert:'🍰',north:'🍛',south:'🥞',italian:'🍝',asian:'🍜',brunch:'🥐',brewery:'🍺',lake:'🌳',gig:'🎶',dance:'💃',photowalk:'📷',climb:'🧗',hills:'🌄'};
+const VENUE_FOOD={coffee:'coffee',icecream:'icecream',dessert:'icecream',north:'north',south:'south',italian:'italian',asian:'asian',brunch:'brunch',brewery:'brewery'};
+const MEALS=['north','italian','asian','south'];
+const RECIPES=[
+  {id:'dinner',title:'Dinner, then something sweet',time:'Evening, around 7:30 pm',stops:[MEALS,['icecream','dessert']]},
+  {id:'coffeeLunch',title:'Coffee that turns into lunch',time:'Weekend, late morning',stops:[['coffee'],['brunch','south','north','italian']]},
+  {id:'lakeDinner',title:'Sunset walk, then dinner',time:'Evening, around 5:45 pm',stops:[['lake'],MEALS]},
+  {id:'runBrunch',title:'Morning run, then a big brunch',time:'Weekend, 6:30 am',need:['running'],stops:[['lake'],['brunch','south']]},
+  {id:'climb',title:'Bouldering, then coffee',time:'Weekend afternoon',need:['gym'],stops:[['climb'],['coffee','south']]},
+  {id:'hills',title:'Sunrise at Nandi Hills, then breakfast',time:'Weekend, 4:30 am start',need:['cycling','trekking'],stops:[['hills'],['brunch','south']]},
+  {id:'gig',title:'Live gig, then late dinner',time:'Friday or Saturday night',need:['livemusic','instrument'],stops:[['gig'],['south','asian','north']]},
+  {id:'dance',title:'Social dance night, then dessert',time:'Thursday or Saturday evening',need:['dance'],stops:[['dance'],['icecream','dessert','coffee']]},
+  {id:'photowalk',title:'Photo walk, then brunch',time:'Weekend, 7:30 am',need:['creator','photo'],stops:[['photowalk'],['brunch','coffee','south']]},
+  {id:'brewery',title:'Craft beer and a long conversation',time:'Evening',drinks:true,stops:[['brewery']]}
+];
+
+/* Sample members. Voice notes are read aloud by the phone's built-in voice. */
+const PROFILES=[
+  {id:'aditi',name:'Aditi',age:30,gender:'Woman',job:'Product designer',college:'IIT Madras',pkg:'₹25–40 LPA',cluster:'kor',intent:'Long-term relationship',kids:'Open',diet:'Non-veg',drinks:'Socially',smoke:'No',langs:['English','Hindi','Kannada'],passions:['running','livemusic','reading'],depth:{running:'Half marathoner. Sunday long runs around Agara Lake.',livemusic:'Indie and fusion gigs, ideally in a small room.',reading:'Mostly short stories and memoirs.'},foods:['coffee','south','icecream','brunch'],big5:[4,4,3,4,3],
+   intro:"Hi, I'm Aditi. I design apps for a living, which mostly means I argue about buttons. Outside work I'm training for my third half marathon, and on Friday nights you'll find me at a small gig somewhere in Koramangala. I'm looking for someone kind, curious, and a little bit silly.",
+   prompts:[['A perfect Sunday in Bengaluru','An early run, benne dose, a long nap, and a gig in the evening.'],['I want someone who','will show up for a 6 am run and a 10 pm conversation.']],
+   hue:265,likesYou:true,photoScore:8.6,voiceScore:8.9,nRatings:54,vibes:{Warm:21,Funny:14,Energetic:9}},
+  {id:'meera',name:'Meera',age:29,gender:'Woman',job:'Architect',college:'NIT Trichy',pkg:'₹25–40 LPA',cluster:'ind',intent:'Marriage-minded',kids:'Want kids',diet:'Non-veg',drinks:'Socially',smoke:'No',langs:['English','Tamil','Hindi'],passions:['dance','creator','travel'],depth:{dance:'Salsa and bachata, four years in. Happy to teach a beginner.',creator:'Posts about old Bengaluru houses and buildings.',travel:'Slow trips to small towns.'},foods:['italian','icecream','coffee'],big5:[5,3,4,4,3],
+   intro:"Hey, I'm Meera. I'm an architect, so I will absolutely stop mid-walk to stare at an old building. I dance salsa and bachata most weekends, and I'm happy to teach you if you promise not to give up. I want a partner who's ready to build a life, and a home, together.",
+   prompts:[['My ideal first date','Dancing badly together, then gelato while we decide who was worse.'],['A green flag I look for','You remember small things I mention in passing.']],
+   hue:20,likesYou:false,photoScore:8.1,voiceScore:8.4,nRatings:38,vibes:{Warm:15,Articulate:11}},
+  {id:'kavya',name:'Kavya',age:32,gender:'Woman',job:'Data scientist',college:'IISc Bangalore',pkg:'₹40–60 LPA',cluster:'jay',intent:'Marriage-minded',kids:'Want kids',diet:'Veg',drinks:'Never',smoke:'No',langs:['English','Kannada','Telugu'],passions:['instrument','livemusic','reading','cooking'],depth:{instrument:'Plays the veena. Learning jazz piano, slowly.',livemusic:'Carnatic concerts and the occasional jazz night.',reading:'Kannada literature and sci-fi.',cooking:'Makes a mean bisi bele bath.'},foods:['south','coffee','north','icecream'],big5:[4,5,2,5,4],
+   intro:"Namaskara, I'm Kavya. I work with data all day and play the veena in the evenings, which is a nice balance. I'm a homebody who loves a good concert, a long book, and cooking for people I care about. I'm looking for someone steady and gentle, who's thinking about marriage too.",
+   prompts:[['Two truths and a lie','I once cooked for 60 people. I can name every Bengaluru flyover. I dislike filter coffee.'],["We'll get along if",'you enjoy a quiet evening as much as a loud one.']],
+   hue:150,likesYou:true,photoScore:7.9,voiceScore:9.1,nRatings:41,vibes:{Calm:19,Articulate:13,Warm:8}},
+  {id:'sana',name:'Sana',age:28,gender:'Woman',job:'Food and travel creator',college:"SRCC Delhi",pkg:'₹40–60 LPA',cluster:'cbd',intent:'Long-term relationship',kids:'Open',diet:'Non-veg',drinks:'Socially',smoke:'No',langs:['English','Hindi','Urdu'],passions:['creator','photo','travel'],depth:{creator:'Short videos about hidden food spots in the city.',photo:'Shoots on film when she can afford it.',travel:'Northeast India is next on the list.'},foods:['asian','brunch','italian','brewery'],big5:[5,3,5,3,3],
+   intro:"Hi! Sana here. I make videos about hidden food spots, so yes, I will know where to eat. I'm loud, curious, and I say yes to almost every adventure. I'd love someone who can keep up, and who also knows when to put the phone down.",
+   prompts:[['The best meal I had this year','A plate of ghee roast idli at 7 am. Nothing has come close.'],["Let's make",'a list of places neither of us has been, and cross them off.']],
+   hue:330,likesYou:true,photoScore:8.8,voiceScore:8.2,nRatings:63,vibes:{Confident:24,Funny:18,Energetic:12}},
+  {id:'ritika',name:'Ritika',age:34,gender:'Woman',job:'Engineering manager',college:'IIM Bangalore',pkg:'₹60 LPA+',cluster:'wf',intent:'Long-term relationship',kids:'Want kids',diet:'Eggetarian',drinks:'Socially',smoke:'No',langs:['English','Hindi','Marathi'],passions:['gym','trekking','travel'],depth:{gym:'Strength training five days a week. Deadlift PR: 110 kg.',trekking:'Kumara Parvatha twice. Kedarkantha next.',travel:'Mountains over beaches, always.'},foods:['north','brunch','coffee'],big5:[4,5,3,3,4],
+   intro:"Hi, I'm Ritika. I lead an engineering team, lift heavy, and spend long weekends on some mountain trail. I'm direct, I'm dependable, and I'm done with games. I'm looking for a teammate, someone who's equally serious about building something real.",
+   prompts:[['My simple pleasures','Sunrise from a hilltop and a flask of masala chai.'],["I'm looking for",'a teammate, not a project.']],
+   hue:200,likesYou:false,photoScore:8.0,voiceScore:7.8,nRatings:29,vibes:{Confident:14,Calm:9}},
+  {id:'nandini',name:'Nandini',age:26,gender:'Woman',job:'Corporate lawyer',college:'NLSIU Bangalore',pkg:'₹25–40 LPA',cluster:'kor',intent:'Long-term relationship',kids:'Open',diet:'Non-veg',drinks:'Socially',smoke:'No',langs:['English','Kannada'],passions:['livemusic','dance','reading'],depth:{livemusic:'Front row at every indie gig in town.',dance:'Contemporary, mostly in my living room.',reading:'Poetry, secretly.'},foods:['coffee','icecream','asian'],big5:[5,2,4,4,3],
+   intro:"Hello, I'm Nandini. I'm a lawyer by day, so I will win the argument about which gig we go to. I'm always in the front row at indie shows, and I dance in my living room when nobody's watching. Looking for someone funny who doesn't take himself too seriously.",
+   prompts:[['A song that gets me every time','Anything with a good horn section. Do not test me.'],['Ask me about','the time I got lost in Chickpet looking for a fabric shop.']],
+   hue:290,likesYou:false,photoScore:7.6,voiceScore:8.7,nRatings:22,vibes:{Funny:12,Energetic:7}},
+  {id:'priya',name:'Priya',age:31,gender:'Woman',job:'Doctor',college:'AIIMS Delhi',pkg:'₹25–40 LPA',cluster:'kor',intent:'Marriage-minded',kids:'Want kids',diet:'Non-veg',drinks:'Never',smoke:'No',langs:['English','Malayalam','Hindi'],passions:['cycling','cooking','travel'],depth:{cycling:'Weekend rides to Nandi Hills, usually before sunrise.',cooking:'Appam and stew are non-negotiable.',travel:'Kerala backwaters, every year.'},foods:['south','north','asian','icecream'],big5:[3,5,3,5,4],
+   intro:"Hi, I'm Priya, a doctor. My shifts are long, so I value calm and kindness more than anything. On weekends I cycle up to Nandi Hills before sunrise and then cook a huge Kerala breakfast. I'm looking for someone warm and family-minded, ready for marriage in the next couple of years.",
+   prompts:[['After a long shift I','cook a big pot of something and call my mother.'],['My ideal Saturday','Sunrise ride, appam for breakfast, and no plans after 2 pm.']],
+   hue:40,likesYou:false,photoScore:8.3,voiceScore:8.0,nRatings:35,vibes:{Warm:16,Calm:12}},
+  {id:'rohan',name:'Rohan',age:33,gender:'Man',job:'Founder, logistics startup',college:'IIT Delhi',pkg:'₹60 LPA+',cluster:'ind',intent:'Long-term relationship',kids:'Want kids',diet:'Non-veg',drinks:'Socially',smoke:'No',langs:['English','Hindi','Kannada'],passions:['running','gym','travel'],depth:{running:'Runs the city 10K every year. Aiming for sub-50.',gym:'Mornings only. Evenings are for people.',travel:'Road trips across Karnataka.'},foods:['north','brunch','coffee','brewery'],big5:[4,4,4,4,3],
+   intro:"Hey, I'm Rohan. I run a logistics startup, which means I think about trucks more than any person should. I keep mornings for running and the gym, and evenings for people. I'm ready for something real with someone ambitious, kind, and up for a road trip.",
+   prompts:[['My most irrational fear','Missing the last metro.'],["I'll know it's right when",'the silences are comfortable.']],
+   hue:220,likesYou:true,photoScore:8.2,voiceScore:7.6,nRatings:47,vibes:{Confident:20,Energetic:11}},
+  {id:'karthik',name:'Karthik',age:30,gender:'Man',job:'Backend engineer',college:'NIT Surathkal',pkg:'₹25–40 LPA',cluster:'jay',intent:'Marriage-minded',kids:'Open',diet:'Veg',drinks:'Never',smoke:'No',langs:['English','Kannada','Tamil'],passions:['instrument','livemusic','cooking'],depth:{instrument:'Acoustic guitar. Has an open-mic following of about six people.',livemusic:'Rock, Carnatic, and everything between.',cooking:'Weekend experiments, some edible.'},foods:['south','coffee','icecream'],big5:[4,4,3,5,4],
+   intro:"Hi, I'm Karthik. I write code during the day and play guitar at open mics at night, for an audience of about six loyal fans. I'm easygoing, I love cooking, and I'm looking for someone to share long walks and slightly off-key songs with.",
+   prompts:[["I'll sing you",'a slightly off-key version of any song you name.'],['A perfect evening','A gig, a masala dosa after, and a long walk home.']],
+   hue:170,likesYou:true,photoScore:7.4,voiceScore:8.8,nRatings:33,vibes:{Funny:15,Warm:13}},
+  {id:'vikram',name:'Vikram',age:35,gender:'Man',job:'Management consultant',college:'IIM Ahmedabad',pkg:'₹60 LPA+',cluster:'kor',intent:'Long-term relationship',kids:'Open',diet:'Non-veg',drinks:'Socially',smoke:'No',langs:['English','Hindi'],passions:['dance','travel','cooking'],depth:{dance:'Bachata every Thursday. Stepping on fewer toes lately.',travel:'Hampi, twice.',cooking:'Makes excellent rajma, according to his mother.'},foods:['italian','north','icecream','brewery'],big5:[5,4,5,4,3],
+   intro:"Hello, I'm Vikram. I'm a consultant, so I travel a lot, but I'm home most weekends dancing bachata and cooking rajma. I'm confident, curious, and honest to a fault. I'd love to meet someone who's independent and wants a real partnership.",
+   prompts:[['Best travel story','Missed a train in Hampi and found the best sunset of my life instead.'],["I'm looking for",'someone who says yes to plans, and no when it matters.']],
+   hue:10,likesYou:false,photoScore:8.5,voiceScore:8.1,nRatings:58,vibes:{Confident:22,Articulate:15}},
+  {id:'imran',name:'Imran',age:29,gender:'Man',job:'Tech creator and photographer',college:'IIIT Hyderabad',pkg:'₹40–60 LPA',cluster:'cbd',intent:'Long-term relationship',kids:'Open',diet:'Non-veg',drinks:'Never',smoke:'No',langs:['English','Hindi','Urdu'],passions:['creator','photo','cycling'],depth:{creator:'Reviews gadgets for about 40K subscribers.',photo:'Street photography on Church Street every Sunday.',cycling:'Commutes by cycle, bravely.'},foods:['coffee','asian','brunch'],big5:[5,3,4,4,3],
+   intro:"Hi, I'm Imran. I review gadgets online and take street photos every Sunday on Church Street. I'm a bit of a nerd, a good listener, and I make great coffee. Looking for someone curious who'll debate me about whether Bengaluru rain is romantic.",
+   prompts:[["Let's debate",'Is Bengaluru rain romantic, or just traffic with extra steps?'],['I geek out on','old cameras and older bookshops.']],
+   hue:250,likesYou:false,photoScore:7.7,voiceScore:8.3,nRatings:30,vibes:{Funny:12,Articulate:10}},
+  {id:'dev',name:'Dev',age:27,gender:'Man',job:'Product manager',college:'BITS Pilani',pkg:'₹25–40 LPA',cluster:'cbd',intent:'Open to see where it goes',kids:'Open',diet:'Non-veg',drinks:'Socially',smoke:'No',langs:['English','Kannada','Hindi'],passions:['trekking','cycling','gym'],depth:{trekking:'Somewhere in the Western Ghats every long weekend.',cycling:'Nandi Hills climbs for fun.',gym:'Mobility over max weights.'},foods:['brunch','north','brewery'],big5:[4,3,4,4,4],
+   intro:"Hey, Dev here. I'm a product manager who spends every long weekend on a trek somewhere in the Western Ghats. I'm the friend who packs extra snacks for everyone. I'm open, easygoing, and looking for someone adventurous.",
+   prompts:[['My friends describe me as','the one who packs extra snacks for everyone.'],['Ideal weekend','A trek on Saturday, recovery brunch on Sunday.']],
+   hue:120,likesYou:false,photoScore:7.9,voiceScore:7.5,nRatings:26,vibes:{Energetic:10,Calm:6}}
+];
+PROFILES.forEach(p=>{p.verified=!['dev','imran'].includes(p.id);p.scorePublic=!['kavya','priya'].includes(p.id);p.photosLocked=['meera','ritika','nandini'].includes(p.id);p.msgFirst=['sana','kavya'].includes(p.id)});
+const PBY=Object.fromEntries(PROFILES.map(p=>[p.id,p]));
+const PRONOUN=p=>p.gender==='Woman'?'her':'his';
+const SAMPLE_ME={verified:true,big5Done:true,phone:'9876543210',privacy:{scorePublic:true,photosLocked:false,msgFirst:false,verifiedOnly:true},name:'Arjun',age:'31',gender:'Man',interest:'Women',cluster:'kor',college:'IIT',pkg:'₹40–60 LPA',photos:Array.from({length:10},(_,i)=>({art:i})),
+  voice:{text:"Hi, I'm Arjun. I build fintech products, I run most mornings, and I never miss a good live gig. I'm looking for someone warm and curious, ready for something long-term.",secs:14},
+  intent:'Long-term relationship',kids:'Want kids',diet:'Non-veg',drinks:'Socially',smoke:'No',langs:['English','Kannada','Hindi'],passions:['running','livemusic','travel'],depth:{running:'Easy 5Ks on weekdays, longer runs on Sundays.',livemusic:'Indie gigs and the odd Carnatic concert.'},foods:['coffee','south','north','icecream'],dateTime:'Evenings',maxTravel:45,big5:[4,4,3,4,3],hue:280,
+  myScores:{photo:7.8,voice:8.3,n:32,vibes:{Warm:11,Confident:8}}};
+const REPLIES=['Ha, fair. What do you usually order there?','Okay, that made me smile. Tell me more.','I like that. Weekends are usually better for me.','Same! We clearly have good taste.','Sounds good. Looking forward to it.'];
+
+/* ---------- State ---------- */
+const KEY='jacaranda-v3';
+function load(){try{const s=localStorage.getItem(KEY);return s?JSON.parse(s):null}catch(e){return null}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function fresh(){return {me:null,liked:[],passed:[],matches:[],ratings:{},likesLeft:10,brand:'Jacaranda',tab:'discover',chat:null,focus:null}}
+let S=load()||fresh();
+S.ratings=S.ratings||{};S.brand='Jacaranda';
+let ob={step:0,d:blankDraft(),err:''};
+let sheet=null, overlay=null, toastMsg='', toastTimer=null;
+let draftRating={photo:0,voice:0,tags:[]}, draftFor=null;
+let rec=null, recErr='', playing=null, curAudio=null;
+function blankDraft(){return {phone:'',otp:'',otpSent:false,verified:false,big5Done:false,pvPhotos:'Everyone',pvScore:'Show it',pvMsg:'Either of us',name:'',age:'',gender:'',interest:'',cluster:'',college:'',pkg:'',photos:[],voice:null,intent:'',kids:'',diet:'',drinks:'',smoke:'',langs:['English'],passions:[],depth:{},foods:[],dateTime:'',maxTravel:45,big5:[3,3,3,3,3],hue:280}}
+
+/* ---------- Helpers ---------- */
+const BLOSSOM=`<svg class="blossom" viewBox="0 0 32 32" aria-hidden="true">${[0,72,144,216,288].map(r=>`<ellipse cx="16" cy="8.5" rx="4.6" ry="7" fill="var(--bloom)" opacity=".9" transform="rotate(${r} 16 16)"/>`).join('')}<circle cx="16" cy="16" r="3.2" fill="var(--mari)"/></svg>`;
+function branchSVG(){
+  const pts=[[150,40,1],[178,62,.8],[128,70,.9],[196,96,.7],[160,104,1],[118,118,.75],[184,138,.85],[142,150,.65],[206,168,.6],[170,182,.8]];
+  const flower=(x,y,k,i)=>`<g transform="translate(${x} ${y}) scale(${k}) rotate(${i*23})">${[0,72,144,216,288].map(r=>`<ellipse cx="0" cy="-7" rx="4.2" ry="6.6" fill="${['var(--bloom)','var(--bloom-2)','var(--bloom-3)'][i%3]}" transform="rotate(${r})"/>`).join('')}<circle r="2.2" fill="var(--mari)" opacity=".8"/></g>`;
+  return `<svg class="branch" viewBox="0 0 230 230" aria-hidden="true"><path d="M230 10 C 190 40, 170 80, 150 110 S 110 170, 60 200" stroke="var(--muted)" stroke-width="1.4" fill="none" opacity=".45"/><path d="M175 72 C 190 80, 200 92, 210 110 M140 128 C 150 150, 165 165, 185 175" stroke="var(--muted)" stroke-width="1" fill="none" opacity=".35"/>${pts.map(([x,y,k],i)=>flower(x,y,k,i)).join('')}</svg>`;
+}
+
+const root=document.getElementById('root');
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const inr=n=>n===0?'Free':'₹'+n.toLocaleString('en-IN');
+const listJoin=a=>a.length<2?(a[0]||''):a.slice(0,-1).join(', ')+' and '+a[a.length-1];
+const fmt=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+const secsOf=text=>Math.max(4,Math.round(text.split(/\s+/).length/2.6));
+
+function art(p,i,small){
+  const h=((p.hue||280)+i*23)%360;
+  const gid='g'+(p.id||'me')+i+(small?'s':'');
+  const pass=p.passions&&p.passions.length?PASS[p.passions[i%p.passions.length]].e:'✿';
+  const cx=[100,300,200,80,320,150,260,60,340,200][i%10], cy=[130,110,90,380,300,160,420,250,200,330][i%10];
+  return `<svg viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Photo placeholder for ${esc(p.name)}">
+  <defs><linearGradient id="${gid}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="hsl(${h} 30% 80%)"/><stop offset="1" stop-color="hsl(${h+35} 24% 46%)"/></linearGradient></defs>
+  <rect width="400" height="500" fill="url(#${gid})"/>
+  <circle cx="${cx}" cy="${cy}" r="${110+(i%3)*25}" fill="hsl(${h} 45% 92% / .35)"/>
+  <circle cx="200" cy="570" r="240" fill="hsl(${h+60} 25% 25% / .3)"/>
+  <text x="200" y="${small?330:310}" text-anchor="middle" font-family="Cormorant Garamond, Garamond, serif" font-style="italic" font-size="${small?260:190}" fill="rgba(255,255,255,.92)">${esc((p.name||'?')[0])}</text>
+  ${small?'':`<text x="345" y="468" font-size="44" text-anchor="middle">${pass}</text>`}
+  </svg>`;
+}
+function photoHTML(person,i,small){
+  const ph=person.photos&&person.photos[i];
+  if(ph&&ph.src)return `<img src="${ph.src}" alt="${esc(person.name)}, photo ${i+1}">`;
+  return art(person,ph&&ph.art!=null?ph.art:i,small);
+}
+function photoCount(p){return p.photos?p.photos.length:10}
+function barsSVG(seed){
+  let x=0;let r=0;for(const c of String(seed))r=(r*31+c.charCodeAt(0))%9973;
+  let out='';for(let i=0;i<34;i++){r=(r*9301+49297)%233280;const h=6+Math.round((r/233280)*26);out+=`<rect x="${i*6}" y="${(36-h)/2}" width="3.5" height="${h}" rx="1.75"/>`}
+  return `<svg class="bars" viewBox="0 0 204 36" preserveAspectRatio="none" aria-hidden="true">${out}</svg>`;
+}
+const ICON={
+  x:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  heart:'<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-9.6-9.2C1 8.6 3 5 6.6 5c2.1 0 3.6 1.2 4.4 2.5C11.8 6.2 13.3 5 15.4 5 19 5 21 8.6 19.6 11.8 17.5 16.4 12 21 12 21z"/></svg>',
+  discover:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z" fill="currentColor"/></svg>',
+  chat:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>',
+  cal:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>',
+  me:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>',
+  back:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M15 5l-7 7 7 7"/></svg>',
+  play:'<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.5v15l13-7.5z"/></svg>',
+  pause:'<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4.5" width="4" height="15" rx="1"/><rect x="14" y="4.5" width="4" height="15" rx="1"/></svg>',
+  mic:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+  stop:'<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>'
+};
+
+/* ---------- Voice ---------- */
+function voiceFor(key){
+  const [kind,id,idx]=key.split('|');
+  if(kind==='intro'){const p=PBY[id];return {v:{text:p.intro,secs:secsOf(p.intro)},g:p.gender}}
+  if(kind==='prompt'){const p=PBY[id];const t=p.prompts[+idx][1];return {v:{text:t,secs:secsOf(t)},g:p.gender}}
+  if(kind==='me')return {v:S.me?S.me.voice:null,g:S.me&&S.me.gender}
+  if(kind==='draft')return {v:ob.d.voice,g:ob.d.gender}
+  if(kind==='chat'){const m=S.matches.find(x=>x.id===id);const msg=m&&m.msgs[+idx];return {v:msg&&msg.voice,g:msg&&msg.from==='them'?PBY[id].gender:(S.me&&S.me.gender)}}
+  return {v:null};
+}
+function stopAudio(){if(curAudio){curAudio.pause();curAudio=null}if('speechSynthesis' in window)speechSynthesis.cancel()}
+function togglePlay(key){
+  const was=playing;stopAudio();playing=null;
+  if(was===key){render();return}
+  const {v,g}=voiceFor(key);if(!v)return;
+  playing=key;
+  if(v.src){
+    const a=new Audio(v.src);curAudio=a;
+    a.onended=()=>{if(playing===key){playing=null;render()}};
+    a.play().catch(()=>{playing=null;toast("This voice note couldn't be played.")});
+  }else if('speechSynthesis' in window){
+    const u=new SpeechSynthesisUtterance(v.text);u.lang='en-IN';u.rate=1;u.pitch=g==='Woman'?1.15:0.85;
+    const vs=speechSynthesis.getVoices().filter(x=>/en[-_]IN/i.test(x.lang));if(vs.length)u.voice=vs[0];
+    u.onend=()=>{if(playing===key){playing=null;render()}};
+    speechSynthesis.speak(u);
+  }else{playing=null;toast("Voice playback isn't supported in this browser.");return}
+  render();
+}
+function playerHTML(key,secs){
+  const on=playing===key;
+  return `<div class="player ${on?'on':''}"><button class="play" data-act="play" data-key="${esc(key)}" aria-label="${on?'Pause':'Play'} voice note">${on?ICON.pause:ICON.play}</button>${barsSVG(key)}<span class="secs">${fmt(secs||0)}</span></div>`;
+}
+async function startRec(target){
+  if(rec)return;
+  if(!navigator.mediaDevices||!window.MediaRecorder){recErr="Voice recording isn't supported in this browser. Try Chrome or Safari.";render();return}
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({audio:true});
+    const mr=new MediaRecorder(stream);const chunks=[];
+    mr.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+    mr.onstop=()=>{
+      stream.getTracks().forEach(t=>t.stop());
+      const secs=Math.max(1,Math.round((Date.now()-rec.t0)/1000));const tgt=rec.target;
+      clearInterval(rec.timer);rec=null;
+      const blob=new Blob(chunks,{type:mr.mimeType||'audio/webm'});const fr=new FileReader();
+      fr.onload=()=>{const v={src:fr.result,secs};if(tgt==='ob'){ob.d.voice=v;ob.err=''}else sendVoice(v);render()};
+      fr.readAsDataURL(blob);
+    };
+    stopAudio();playing=null;
+    rec={mr,target,t0:Date.now(),timer:setInterval(()=>{if(!rec)return;const s=Math.round((Date.now()-rec.t0)/1000);const el=document.getElementById('rec-time');if(el)el.textContent=fmt(s);if(s>=60)stopRec()},250)};
+    recErr='';mr.start();render();
+  }catch(err){recErr='Microphone access was blocked. Allow it in your browser settings, or open this page in its own browser tab.';render()}
+}
+function stopRec(){if(rec&&rec.mr.state!=='inactive')rec.mr.stop()}
+
+/* ---------- Ratings ---------- */
+function scoresOf(p){
+  const r=S.ratings[p.id];let ph=p.photoScore,vo=p.voiceScore,n=p.nRatings;const vibes={...p.vibes};
+  if(r){ph=(ph*n+r.photo)/(n+1);vo=(vo*n+r.voice)/(n+1);n++;r.tags.forEach(t=>vibes[t]=(vibes[t]||0)+1)}
+  const overall=(ph+vo)/2;
+  return {ph,vo,n,overall,top:overall>=TOP_RATED,vibes:Object.entries(vibes).sort((a,b)=>b[1]-a[1]).slice(0,3)};
+}
+const f1=x=>x.toFixed(1);
+
+/* ---------- Matching ---------- */
+function travel(a,b){return T[a][b]}
+function eligible(me,p){
+  if(me.interest==='Women'&&p.gender!=='Woman')return false;
+  if(me.interest==='Men'&&p.gender!=='Man')return false;
+  if((me.kids==='Want kids'&&p.kids==="Don't want kids")||(me.kids==="Don't want kids"&&p.kids==='Want kids'))return false;
+  if(me.smoke==='No'&&p.smoke==='Yes')return false;
+  if(travel(me.cluster,p.cluster)>me.maxTravel)return false;
+  if(me.privacy&&me.privacy.verifiedOnly&&!p.verified)return false;
+  return true;
+}
+function compat(me,p){
+  const shP=me.passions.filter(x=>p.passions.includes(x));
+  const uni=new Set([...me.passions,...p.passions]).size||1;
+  let s=25*shP.length/uni+3*Math.min(shP.length,3);
+  const shF=me.foods.filter(x=>p.foods.includes(x));
+  s+=15*shF.length/Math.max(1,Math.min(me.foods.length,p.foods.length));
+  if(me.intent===p.intent)s+=10;else if(me.intent!=='Open to see where it goes'&&p.intent!=='Open to see where it goes')s+=6;else s+=3;
+  s+=me.kids===p.kids?5:3;
+  s+=me.drinks===p.drinks?4:1;
+  s+=me.diet===p.diet?4:((me.diet==='Veg')!==(p.diet==='Veg')?1:3);
+  const shL=me.langs.filter(l=>p.langs.includes(l)&&l!=='English');
+  s+=shL.length?5:3;
+  const diff=me.big5.reduce((a,v,i)=>a+Math.abs(v-p.big5[i]),0)/5;
+  s+=15*(1-diff/4);
+  const t=travel(me.cluster,p.cluster);
+  s+=t<=20?5:t<=30?3:1;
+  const score=Math.max(40,Math.min(99,Math.round(100*s/97)));
+  const reasons=[];
+  if(shP.length)reasons.push('You both love '+listJoin(shP.map(x=>PASS[x].label.toLowerCase())));
+  if(me.intent===p.intent)reasons.push(INTENT_PHRASE[p.intent]);
+  if(shF.length)reasons.push('Same date taste: '+listJoin(shF.slice(0,2).map(x=>FOOD_LOW[x])));
+  if(shL.length)reasons.push('You both speak '+shL[0]);
+  if(diff<=0.6)reasons.push('Very similar pace of life');
+  if(t<=20)reasons.push(`Only about ${t} min apart`);
+  return {score,reasons:reasons.slice(0,3),shP,shF};
+}
+function queue(){
+  const me=S.me;const seen=new Set([...S.liked,...S.passed,...S.matches.map(m=>m.id)]);
+  const q=PROFILES.filter(p=>!seen.has(p.id)&&eligible(me,p))
+    .map(p=>{const c=compat(me,p),sc=scoresOf(p);return {p,c,sc,rank:0.6*c.score+0.4*sc.overall*10}})
+    .sort((a,b)=>b.rank-a.rank);
+  if(S.focus){const i=q.findIndex(x=>x.p.id===S.focus);if(i>0)q.unshift(q.splice(i,1)[0])}
+  return q;
+}
+
+/* ---------- Date planning ---------- */
+function midpoint(a,b){let best=a,bv=1e9;for(const c in T){const v=Math.max(T[a][c],T[b][c])*10+T[a][c]+T[b][c];if(v<bv){bv=v;best=c}}return best}
+function dist(from,v){return v.cluster==='out'?75:T[from][v.cluster]}
+function nearestVenue(type,near,vegPair,exclude){
+  let best=null,bs=1e9;
+  for(const v of VENUES){if(v.type!==type||v===exclude)continue;const d=dist(near,v)-(vegPair&&v.pureVeg?3:0);if(d<bs){bs=d;best=v}}
+  return best;
+}
+function likesOf(me,p,v){const f=VENUE_FOOD[v.type];return f?(me.foods.includes(f)?1:0)+(p.foods.includes(f)?1:0):0}
+function plansFor(me,p){
+  const mid=midpoint(me.cluster,p.cluster);const out=[];
+  const vegPair=me.diet==='Veg'||p.diet==='Veg';
+  for(const r of RECIPES){
+    let base=1,shared=[],a=false,b=false;
+    if(r.need){
+      a=r.need.some(x=>me.passions.includes(x));b=r.need.some(x=>p.passions.includes(x));
+      if(!a&&!b)continue;
+      base+=a&&b?8:2;
+      if(a&&b)shared=r.need.filter(x=>me.passions.includes(x)&&p.passions.includes(x));
+    }
+    if(r.drinks&&!(me.drinks==='Socially'&&p.drinks==='Socially'))continue;
+    let combos=[[]];
+    for(const types of r.stops)combos=combos.flatMap(c=>types.map(t=>[...c,t]));
+    let best=null;
+    for(const combo of combos){
+      const stops=[];let near=mid,ok=true;
+      for(const t of combo){const v=nearestVenue(t,near,vegPair,stops[stops.length-1]);if(!v){ok=false;break}stops.push(v);near=v.cluster==='out'?'mal':v.cluster}
+      if(!ok)continue;
+      const total=stops.reduce((x,v)=>x+v.cost,0);
+      if(total>2000)continue;
+      const sc=base+stops.reduce((x,v)=>x+likesOf(me,p,v)*3,0)+(total>=1500?6:-4);
+      if(!best||sc>best.sc)best={sc,stops,total};
+    }
+    if(!best)continue;
+    const bothFoods=[...new Set(best.stops.filter(v=>likesOf(me,p,v)===2).map(v=>FOOD_LOW[VENUE_FOOD[v.type]]))];
+    let why;
+    if(shared.length)why=`You both love ${PASS[shared[0]].label.toLowerCase()}.`;
+    else if(r.need)why=b?`Something ${p.name} loves, and a fun first for you.`:`Something you love, and a fun first for ${p.name}.`;
+    else if(bothFoods.length)why=`Built around ${listJoin(bothFoods)}, which you both like.`;
+    else why='Easy to get to for both of you.';
+    out.push({id:r.id,title:r.title,time:r.time,stops:best.stops.map(v=>({name:v.name,type:v.type,cluster:v.cluster,cost:v.cost,blurb:v.blurb,sample:v.sample})),total:best.total,mid,score:best.sc,why,forMe:T[me.cluster][mid],forThem:T[p.cluster][mid]});
+  }
+  out.sort((x,y)=>y.score-x.score);
+  return out.slice(0,3);
+}
+
+/* ---------- Rendering ---------- */
+function render(){
+  const y=window.scrollY;
+  document.title='Jacaranda, dating app prototype';
+  let html='';
+  if(!S.me||ob.section)html=renderOnboarding();
+  else{
+    let body='';
+    if(S.chat)body=renderChat(S.chat);
+    else if(S.tab==='discover')body=renderDiscover();
+    else if(S.tab==='matches')body=renderMatches();
+    else if(S.tab==='dates')body=renderDates();
+    else body=renderProfile();
+    html=`<div class="app">${S.chat?'':topbar()}${body}</div>${renderNav()}`;
+  }
+  if(sheet)html+=renderSheet();
+  if(overlay)html+=renderOverlay();
+  if(toastMsg)html+=`<div class="toast" role="status">${esc(toastMsg)}</div>`;
+  root.innerHTML=html;
+  window.scrollTo(0,y);
+}
+function topbar(){
+  const right=S.tab==='discover'?`<span class="pill gold">${S.likesLeft} likes left today</span>`:'';
+  return `<header class="topbar"><div class="wordmark">${BLOSSOM}${esc(S.brand)}</div>${right}</header>`;
+}
+function renderNav(){
+  const unread=S.matches.filter(m=>m.unread).length;
+  const tabs=[['discover','Discover',ICON.discover],['matches','Matches',ICON.chat],['dates','Dates',ICON.cal],['profile','You',ICON.me]];
+  return `<nav class="nav" aria-label="Main"><div class="nav-inner">${tabs.map(([id,l,ic])=>`<button data-act="tab" data-tab="${id}" ${S.tab===id&&!S.chat?'aria-current="page"':''}>${ic}${l}${id==='matches'&&unread?`<span class="badge">${unread}</span>`:''}</button>`).join('')}</div></nav>`;
+}
+
+/* Onboarding: a short sign-up, then the rest of the profile is filled in later */
+const SIGNUP=['phone','basics','photos','voice','selfie'];
+const SECTION_TITLES={values:'Values & dealbreakers',passions:'Passions',dates:'Date taste',personality:'Personality',photos:'More photos',selfie:'Selfie verification'};
+function chips(field,opts,multi,labels){
+  const v=ob.d[field];
+  return `<div class="chips" role="group">${opts.map((o,i)=>{const on=multi?v.includes(o):String(v)===String(o);return `<button class="chip" data-act="chip" data-field="${field}" data-val="${esc(o)}" data-multi="${multi?1:0}" aria-pressed="${on}">${labels?labels[i]:esc(o)}</button>`}).join('')}</div>`;
+}
+function recorderHTML(target,key,existing){
+  const on=rec&&rec.target===target;
+  if(on)return `<div class="recbox"><button class="recbtn on" data-act="rec-stop" aria-label="Stop recording">${ICON.stop}</button><div class="rectime" id="rec-time">0:00</div><p class="muted small">Recording. Tap to stop. Maximum 60 seconds.</p></div>`;
+  if(existing)return `<div class="voice big"><p class="q">Your voice note</p>${playerHTML(key,existing.secs)}${existing.text?`<p class="transcript">${esc(existing.text)}</p>`:''}<div style="height:12px"></div><button class="btn secondary" data-act="rec-start" data-target="${target}">Record again</button></div>`;
+  return `<div class="recbox"><button class="recbtn" data-act="rec-start" data-target="${target}" aria-label="Start recording">${ICON.mic}</button><p><b>Tap to record</b></p><p class="muted small">30 to 60 seconds works best.</p></div>
+  ${recErr?`<p class="err" role="alert">${esc(recErr)}</p><button class="btn secondary" data-act="demo-voice">Use a demo voice note instead</button>`:''}`;
+}
+function photoGrid(d){
+  const n=d.photos.length;
+  return `<div class="pgrid">${d.photos.map((ph,i)=>`<div class="cell">${ph.src?`<img src="${ph.src}" alt="Your photo ${i+1}">`:art({name:d.name||'You',hue:d.hue,passions:d.passions,id:'draft'},ph.art)}<button class="rm" data-act="rm-photo" data-i="${i}" aria-label="Remove photo ${i+1}">✕</button></div>`).join('')}
+    ${n<MAX_PHOTOS?`<label class="cell add" for="photo-input">+ Add photos</label>`:''}</div>
+    <input id="photo-input" type="file" accept="image/*" multiple hidden>`;
+}
+function selfieHTML(d){
+  if(d.verified)return `<div class="verify-done"><span class="vbig">✓</span><h3>You're verified</h3><p class="muted small">A verified badge now shows on your profile. Your selfie is never shown to anyone.</p></div>`;
+  if(ob.checking)return `<div class="recbox"><div class="spinner" aria-hidden="true"></div><p><b>Checking your selfie</b></p><p class="muted small">Matching it with your profile photos. This takes a few seconds.</p></div>`;
+  return `<div class="recbox"><div class="pose" aria-hidden="true">✌️</div><p><b>Take a selfie holding up two fingers</b></p><p class="muted small" style="margin-bottom:16px">We compare it with your photos to confirm it's really you. It's never shown on your profile.</p>
+    <label class="btn" for="selfie-input" style="cursor:pointer">Take selfie</label><input id="selfie-input" type="file" accept="image/*" capture="user" hidden></div>
+    <button class="btn secondary" data-act="demo-selfie">Use a demo selfie</button>`;
+}
+function stepContent(key){
+  const d=ob.d;
+  if(key==='phone')return `<h2>Your phone number</h2><p class="muted">We'll send a one-time code. Your number is never shown to anyone.</p>
+    <div class="field"><label class="lbl" for="f-phone">Mobile number</label><div class="phone"><span>+91</span><input id="f-phone" type="tel" inputmode="numeric" maxlength="10" data-ob="phone" value="${esc(d.phone)}" placeholder="98765 43210" autocomplete="tel-national"></div></div>
+    ${d.otpSent?`<div class="field"><label class="lbl" for="f-otp">Enter the 6-digit code</label><input id="f-otp" type="text" inputmode="numeric" maxlength="6" data-ob="otp" value="${esc(d.otp)}" autocomplete="one-time-code"><p class="hint">Demo code: 123456</p></div>`
+      :`<button class="btn secondary" data-act="send-otp">Send code</button>`}`;
+  if(key==='basics')return `<h2>About you</h2><p class="muted">Jacaranda is for graduates of tier-1 colleges earning ${MIN_PACKAGE_LABEL} or more.</p>
+    <div class="field"><label class="lbl" for="f-name">First name</label><input id="f-name" type="text" data-ob="name" value="${esc(d.name)}" autocomplete="given-name"></div>
+    <div class="field"><label class="lbl" for="f-age">Age</label><input id="f-age" type="number" inputmode="numeric" min="18" max="80" data-ob="age" value="${esc(d.age)}"><p class="hint">You must be 18 or older.</p></div>
+    <div class="field"><span class="lbl">I am a</span>${chips('gender',['Woman','Man'])}</div>
+    <div class="field"><span class="lbl">Interested in</span>${chips('interest',['Women','Men','Everyone'])}</div>
+    <div class="field"><span class="lbl">Where you live</span>${chips('cluster',Object.keys(CLUSTERS),false,Object.values(CLUSTERS))}</div>
+    <div class="field"><span class="lbl">Where did you study?</span>${chips('college',COLLEGES)}</div>
+    <div class="field"><span class="lbl">Annual package</span>${chips('pkg',PACKAGES)}<p class="hint">Self-declared for now. LinkedIn verification comes later.</p></div>`;
+  if(key==='photos')return `<h2>Your photos</h2><p class="muted">Start with ${MIN_PHOTOS}. You can add up to ${MAX_PHOTOS} later. Profiles with 6 or more photos get noticeably more likes.</p>
+    <p class="field" style="margin-bottom:0"><b>${d.photos.length} added</b>${d.photos.length<MIN_PHOTOS?`, ${MIN_PHOTOS-d.photos.length} more to go`:''}</p>
+    ${photoGrid(d)}
+    ${d.photos.length<MIN_PHOTOS?`<div style="height:12px"></div><button class="btn secondary" data-act="demo-photos">Fill with sample photos (demo)</button>`:''}
+    <h3 class="sub">Your privacy</h3>
+    <div class="field"><span class="lbl">Who sees all your photos?</span>${chips('pvPhotos',['Everyone','Matches only'],false,['Everyone','Only matches (others see 3)'])}</div>
+    <div class="field"><span class="lbl">Show your rating on your profile?</span>${chips('pvScore',['Show it','Keep it private'])}</div>
+    ${d.gender==='Woman'?`<div class="field"><span class="lbl">Who sends the first message?</span>${chips('pvMsg',['I message first','Either of us'])}</div>`:''}
+    <p class="hint">You can change these any time. Screenshots are blocked in the mobile app.</p>`;
+  if(key==='voice')return `<h2>Tell me about yourself</h2><p class="muted">Speak freely, like you would to a friend: what you do, what you love, and what you're looking for. In any language you're comfortable in.</p>${recorderHTML('ob','draft|x',d.voice)}`;
+  if(key==='selfie')return `<h2>Verify it's you</h2><p class="muted">Verified members get a badge and are shown to more people. Most members only see verified profiles.</p>${selfieHTML(d)}`;
+  if(key==='values')return `<h2>Values & dealbreakers</h2><p class="muted">You'll only see people who want the same things.</p>
+    <div class="field"><span class="lbl">Relationship goal</span>${chips('intent',INTENTS)}</div>
+    <div class="field"><span class="lbl">Children</span>${chips('kids',KIDS)}</div>
+    <div class="field"><span class="lbl">Food</span>${chips('diet',DIETS)}</div>
+    <div class="field"><span class="lbl">Drinks</span>${chips('drinks',DRINKS)}</div>
+    <div class="field"><span class="lbl">Smokes</span>${chips('smoke',SMOKE)}</div>
+    <div class="field"><span class="lbl">Languages you speak</span>${chips('langs',LANGS,true)}</div>`;
+  if(key==='passions')return `<h2>What you love</h2><p class="muted">Pick up to five. Add a line about each so people know it's real.</p>
+    <div class="field">${chips('passions',PASSIONS.map(p=>p.id),true,PASSIONS.map(p=>p.e+' '+p.label))}</div>
+    ${d.passions.map(id=>`<div class="field"><label class="lbl" for="dp-${id}">${PASS[id].e} ${PASS[id].label}</label><input id="dp-${id}" type="text" data-ob="depth" data-k="${id}" value="${esc(d.depth[id]||'')}" placeholder="${esc(PASS[id].ph)}"></div>`).join('')}`;
+  if(key==='dates')return `<h2>Your kind of date</h2><p class="muted">We use this to plan your first date, somewhere in between you both.</p>
+    <div class="field"><span class="lbl">Food and drink you enjoy</span>${chips('foods',FOODS.map(f=>f.id),true,FOODS.map(f=>f.e+' '+f.label))}<p class="hint">Pick at least two.</p></div>
+    <div class="field"><span class="lbl">Best time for dates</span>${chips('dateTime',['Mornings','Evenings','Weekends'])}</div>
+    <div class="field"><span class="lbl">How far will you travel for a date?</span>${chips('maxTravel',['30','45','60'],false,['30 min','45 min','60 min'])}<p class="hint">In Bengaluru traffic, minutes are more honest than kilometres.</p></div>`;
+  if(key==='personality')return `<h2>A little about you</h2><p class="muted">Five quick statements. How much do they sound like you?</p>
+    ${TRAITS.map((t,i)=>`<div class="field"><label class="lbl" for="b5-${i}">${t.s}</label><input id="b5-${i}" type="range" min="1" max="5" step="1" value="${d.big5[i]}" data-ob="big5" data-i="${i}"><div class="slider-labels"><span>Not me</span><span>Very me</span></div></div>`).join('')}`;
+  return '';
+}
+function renderOnboarding(){
+  const d=ob.d;
+  if(ob.section){
+    const primary=ob.section==='selfie'?(d.verified?'Done':''):'Save';
+    return `<div class="app no-nav"><div class="view ob">${stepContent(ob.section==='photos'?'photos':ob.section)}${ob.err?`<p class="err" role="alert">${esc(ob.err)}</p>`:''}
+    <div class="ob-actions"><button class="btn secondary" data-act="sec-cancel">Cancel</button>${primary?`<button class="btn" data-act="sec-save">${primary}</button>`:''}</div></div></div>`;
+  }
+  const st=ob.step;
+  if(st===0){
+    return `<div class="app no-nav"><div class="hero">${branchSVG()}
+      <div class="wordmark">${BLOSSOM}${esc(S.brand)}</div>
+      <h1>Dating for people who actually want to meet.</h1>
+      <p class="lede">For tier-1 graduates in Bengaluru who are ready for something real. Sign up in under two minutes.</p>
+      <div class="promise">
+        <div><span class="ic">🎙️</span><p><b>Voice first</b><span class="muted small">Hear how someone talks before you match. Less typing, more personality.</span></p></div>
+        <div><span class="ic">✓</span><p><b>Verified and private</b><span class="muted small">Selfie-verified members. You decide who sees your photos and your rating.</span></p></div>
+        <div><span class="ic">📍</span><p><b>Dates planned for you</b><span class="muted small">Three ideas in between you both, ₹1,500 to ₹2,000 for two.</span></p></div>
+      </div>
+      <button class="btn" data-act="ob-next">Get started</button>
+      <div style="height:10px"></div>
+      <button class="btn secondary" data-act="ob-sample">Explore with a sample profile</button>
+    </div></div>`;
+  }
+  if(st==='wait'){
+    return `<div class="app no-nav"><div class="gate"><div class="wordmark" style="justify-content:center">${BLOSSOM}${esc(S.brand)}</div>
+      <h1>You're on the waitlist</h1>
+      <p class="muted" style="max-width:34ch;margin:0 auto 26px">Jacaranda is currently open to graduates of tier-1 colleges earning ${MIN_PACKAGE_LABEL} or more. We'll let you know if this changes.</p>
+      <button class="btn secondary" data-act="ob-back-gate">Change my answers</button></div></div>`;
+  }
+  const key=SIGNUP[st-1];const last=st===SIGNUP.length;
+  const selfieWaiting=key==='selfie'&&!d.verified;
+  return `<div class="app no-nav"><div class="progress" aria-hidden="true"><i style="width:${st/SIGNUP.length*100}%"></i></div>
+  <p class="stepcount">Step ${st} of ${SIGNUP.length}</p>
+  <div class="view ob">${stepContent(key)}${ob.err?`<p class="err" role="alert">${esc(ob.err)}</p>`:''}
+  <div class="ob-actions"><button class="btn secondary" data-act="ob-back">Back</button>${selfieWaiting?`<button class="btn secondary" data-act="ob-next" style="flex:1">Skip for now</button>`:`<button class="btn" data-act="ob-next">${last?'Start exploring':'Continue'}</button>`}</div></div></div>`;
+}
+function validateKey(key){
+  const d=ob.d;
+  if(key==='phone'){
+    if(!/^[6-9]\d{9}$/.test(d.phone))return 'Enter a valid 10-digit Indian mobile number.';
+    if(!d.otpSent)return 'Tap "Send code" first.';
+    if(d.otp!=='123456')return 'That code is incorrect. For this demo, use 123456.';
+  }
+  if(key==='basics'){
+    if(!d.name.trim())return 'Add your first name.';
+    const a=parseInt(d.age,10);
+    if(!a)return 'Add your age.';
+    if(a<18)return 'You need to be 18 or older to join.';
+    if(!d.gender||!d.interest||!d.cluster)return "Choose who you are, who you're interested in, and where you live.";
+    if(!d.college||!d.pkg)return 'Choose your college and package range.';
+  }
+  if(key==='photos'&&d.photos.length<MIN_PHOTOS)return `Add at least ${MIN_PHOTOS} photos. You have ${d.photos.length}.`;
+  if(key==='voice'&&!d.voice)return 'Record your voice note to continue.';
+  if(key==='values'&&(!d.intent||!d.kids||!d.diet||!d.drinks||!d.smoke))return 'Answer each question so we only show you compatible people.';
+  if(key==='passions'&&!d.passions.length)return 'Pick at least one passion.';
+  if(key==='dates'&&(d.foods.length<2||!d.dateTime))return 'Pick at least two foods and your best time for dates.';
+  return '';
+}
+function passesGate(d){return d.college!=='Other college'&&d.pkg!=='Below ₹25 LPA'}
+function applyPrivacy(me){
+  me.privacy=me.privacy||{};
+  if(me.pvPhotos)me.privacy.photosLocked=me.pvPhotos==='Matches only';
+  if(me.pvScore)me.privacy.scorePublic=me.pvScore!=='Keep it private';
+  if(me.pvMsg)me.privacy.msgFirst=me.pvMsg==='I message first';
+  me.privacy={scorePublic:true,photosLocked:false,msgFirst:false,verifiedOnly:true,...me.privacy};
+}
+function finishOnboarding(me){
+  me.age=String(me.age);me.maxTravel=+me.maxTravel||45;applyPrivacy(me);
+  S.me=me;S.tab='discover';S.chat=null;
+  if(!S.matches.length){
+    const q=queue().filter(x=>x.p.likesYou&&!x.p.msgFirst);
+    if(q.length){const p=q[0].p;const t=`Hi ${me.name}! Loved your voice note. Want to plan something?`;S.matches.push({id:p.id,unread:true,msgs:[{from:'them',text:t,voice:{text:t,secs:secsOf(t)}}],plan:null});}
+  }
+  save();
+}
+function completion(me){
+  const items=[
+    {k:'photos',label:'Add 6 or more photos',done:photoCount(me)>=6},
+    {k:'voice',label:'Voice note',done:!!me.voice},
+    {k:'selfie',label:'Verify with a selfie',done:!!me.verified},
+    {k:'values',label:'Values & dealbreakers',done:!!me.intent},
+    {k:'passions',label:'Passions',done:me.passions.length>0},
+    {k:'dates',label:'Date taste',done:me.foods.length>=2},
+    {k:'personality',label:'Personality',done:!!me.big5Done}
+  ];
+  return {items,pct:Math.round(100*items.filter(i=>i.done).length/items.length)};
+}
+async function downscale(file){
+  const url=await new Promise((res,rej)=>{const fr=new FileReader();fr.onload=()=>res(fr.result);fr.onerror=rej;fr.readAsDataURL(file)});
+  const img=await new Promise((res,rej)=>{const i=new Image();i.onload=()=>res(i);i.onerror=rej;i.src=url});
+  const m=720;const k=Math.min(1,m/Math.max(img.width,img.height));
+  const c=document.createElement('canvas');c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);
+  c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+  return c.toDataURL('image/jpeg',0.72);
+}
+function runSelfieCheck(){
+  ob.checking=true;ob.err='';render();
+  setTimeout(()=>{ob.checking=false;ob.d.verified=true;render()},1800);
+}
+
+/* Discover */
+function renderDiscover(){
+  if(S.likesLeft<=0)return `<div class="view empty"><h2>That's your 10 for today</h2><p>Fewer likes means more thought behind each one. New likes arrive tomorrow.</p><button class="btn" data-act="reset-likes">Reset likes (demo only)</button></div>`;
+  const q=queue();
+  if(!q.length)return `<div class="view empty"><h2>You've seen everyone nearby</h2><p>Everyone within ${S.me.maxTravel} minutes of you has been shown. Widen your range or check back tomorrow.</p>${S.me.maxTravel<60?'<button class="btn" data-act="widen">Show people up to 60 min away</button>':''}<div style="height:10px"></div><button class="btn secondary" data-act="reset-seen">Start over with everyone (demo)</button></div>`;
+  const {p,c,sc}=q[0];const me=S.me;const t=travel(me.cluster,p.cluster);
+  const standouts=q.filter(x=>x.sc.top&&x.p.scorePublic).slice(0,6);
+  const comp=completion(me);
+  const mine=S.ratings[p.id];
+  if(draftFor!==p.id){draftFor=p.id;draftRating=mine?{...mine,tags:[...mine.tags]}:{photo:0,voice:0,tags:[]}}
+  const vitals=[['💞',p.intent],['👶',p.kids],['🥗',p.diet],['🥂',p.drinks==='Never'?"Doesn't drink":'Drinks socially'],['🚭',p.smoke==='No'?"Doesn't smoke":'Smokes'],['🗣️','Speaks '+listJoin(p.langs)]];
+  const n=photoCount(p);
+  return `<main class="view">
+    ${comp.pct<100?`<button class="nudge" data-act="tab" data-tab="profile"><span class="nring" style="--p:${comp.pct}"><span>${comp.pct}%</span></span><span><b>Complete your profile</b><span>${esc(comp.items.find(i=>!i.done).label)} to get better matches and date plans.</span></span></button>`:''}
+    ${standouts.length?`<p class="so-title">Top rated near you</p><div class="standouts">${standouts.map(x=>`<button class="so" data-act="focus" data-id="${x.p.id}"><span class="avatar">${photoHTML(x.p,0,true)}</span><span><b>${esc(x.p.name)}</b><span>★ ${f1(x.sc.overall)}</span></span></button>`).join('')}</div>`:''}
+    <section class="who">
+      <h1>${esc(p.name)}</h1>
+      <p class="meta">${p.age}, ${esc(p.job)}<br>🎓 ${esc(p.college)}, 💼 ${esc(p.pkg)}<br>${esc(CLUSTERS[p.cluster])}, about ${t} min from you</p>
+      <div class="tags">${p.verified?'<span class="pill leaf">✓ Verified</span>':'<span class="pill">Not verified</span>'}${sc.top&&p.scorePublic?'<span class="pill gold">⭐ Top rated</span>':''}<span class="pill">${esc(p.intent)}</span></div>
+    </section>
+    ${p.scorePublic?`<div class="scorebar" aria-label="Ratings">
+      <div class="score main"><b>${f1(sc.overall)}</b><span>Overall, from ${sc.n} ratings</span></div>
+      <div class="score"><b>${f1(sc.ph)}</b><span>Photos</span></div>
+      <div class="score"><b>${f1(sc.vo)}</b><span>Voice</span></div>
+    </div>`:`<p class="privnote">🔒 ${esc(p.name)} keeps ${PRONOUN(p)} rating private</p>`}
+    <div class="voice big"><p class="q">🎙️ Tell me about yourself</p>${playerHTML('intro|'+p.id,secsOf(p.intro))}
+      <div class="vibes">${sc.vibes.map(([v,k])=>`<span class="pill">${esc(v)} ${k}</span>`).join('')}</div>
+      <button class="heart" data-act="like" data-part="intro" aria-label="Like ${esc(p.name)}'s voice note">${ICON.heart}</button></div>
+    <section class="why" aria-label="Compatibility">
+      <div class="ring" style="--p:${c.score}"><span>${c.score}%<small>match</small></span></div>
+      <ul>${c.reasons.map(r=>`<li>${esc(r)}</li>`).join('')}</ul>
+    </section>
+    <div class="gallery" aria-label="${n} photos, swipe to see more">${Array.from({length:n},(_,i)=>{const locked=p.photosLocked&&i>=3;return locked
+      ?`<div class="photo locked">${photoHTML(p,i)}<span class="lockmsg">🔒<br>${esc(p.name)} shares ${n-3} more photos after you match</span></div>`
+      :`<div class="photo">${photoHTML(p,i)}<span class="cap">${i+1} of ${n}${i===0?', swipe':''}</span><button class="heart" data-act="like" data-part="photo${i}" aria-label="Like photo ${i+1}">${ICON.heart}</button></div>`}).join('')}</div>
+    <div class="voice"><p class="q">${esc(p.prompts[0][0])}</p>${playerHTML('prompt|'+p.id+'|0',secsOf(p.prompts[0][1]))}<p class="transcript">${esc(p.prompts[0][1])}</p><button class="heart" data-act="like" data-part="prompt0" aria-label="Like this answer">${ICON.heart}</button></div>
+    <div class="panel"><h3>The essentials</h3>${vitals.map(([k,v])=>`<div class="vital"><span class="k" aria-hidden="true">${k}</span><span>${esc(v)}</span></div>`).join('')}</div>
+    <div class="panel"><h3>What ${esc(p.name)} loves</h3>${p.passions.map(id=>`<div class="passion"><b>${PASS[id].e} ${PASS[id].label}${c.shP.includes(id)?'<span class="both">You too</span>':''}</b>${p.depth[id]?`<p>${esc(p.depth[id])}</p>`:''}</div>`).join('')}</div>
+    <div class="voice"><p class="q">${esc(p.prompts[1][0])}</p>${playerHTML('prompt|'+p.id+'|1',secsOf(p.prompts[1][1]))}<p class="transcript">${esc(p.prompts[1][1])}</p><button class="heart" data-act="like" data-part="prompt1" aria-label="Like this answer">${ICON.heart}</button></div>
+    <div class="panel"><h3>Date taste</h3><div class="foodrow">${p.foods.map(f=>`<span class="food ${me.foods.includes(f)?'shared':''}">${FOOD[f].e} ${FOOD[f].label}</span>`).join('')}</div></div>
+    <div class="panel"><h3>How you compare</h3>
+      ${TRAITS.map((tr,i)=>`<div class="trait"><div class="tl"><span>${tr.label}</span></div><div class="track"><i class="me" style="left:${(me.big5[i]-1)*25}%"></i><i class="them" style="left:${(p.big5[i]-1)*25}%"></i></div></div>`).join('')}
+      <div class="legend"><span><i style="background:var(--jac)"></i>You</span><span><i style="background:var(--mari)"></i>${esc(p.name)}</span></div>
+    </div>
+    <section class="rate" aria-label="Rate ${esc(p.name)}">
+      <h3>${mine?'Your rating':'Rate '+esc(p.name)}</h3>
+      <p class="muted small">Anonymous. ${p.scorePublic?`${esc(p.name)} sees the average, never who rated.`:`${esc(p.name)} keeps ${PRONOUN(p)} score private, so only ${p.gender==='Woman'?'she':'he'} will see it.`}</p>
+      <div class="field"><span class="lbl">Photos</span><div class="ten">${[1,2,3,4,5,6,7,8,9,10].map(v=>`<button data-act="rate" data-k="photo" data-v="${v}" aria-pressed="${draftRating.photo===v}">${v}</button>`).join('')}</div></div>
+      <div class="field"><span class="lbl">Voice</span><div class="ten">${[1,2,3,4,5,6,7,8,9,10].map(v=>`<button data-act="rate" data-k="voice" data-v="${v}" aria-pressed="${draftRating.voice===v}">${v}</button>`).join('')}</div></div>
+      <div class="field"><span class="lbl">Their vibe <span class="muted">(pick up to two)</span></span><div class="chips">${VIBES.map(v=>`<button class="chip" data-act="vibe" data-v="${v}" aria-pressed="${draftRating.tags.includes(v)}">${v}</button>`).join('')}</div></div>
+      <button class="btn" data-act="submit-rating" ${draftRating.photo&&draftRating.voice?'':'disabled'}>${mine?'Update rating':'Submit rating'}</button>
+    </section>
+    <button class="report" data-act="report">Report or block ${esc(p.name)}</button>
+  </main>
+  <button class="skip" data-act="skip" aria-label="Skip ${esc(p.name)}">${ICON.x}</button>`;
+}
+function partText(p,part){
+  if(part==='intro')return {label:'voice note',quote:p.intro,q:'Tell me about yourself'};
+  if(part.startsWith('prompt')){const pr=p.prompts[+part.slice(6)];return {label:'answer',quote:pr[1],q:pr[0]}}
+  return {label:'photo',quote:'Photo '+(+part.slice(5)+1),q:''};
+}
+function renderSheet(){
+  if(sheet.type==='like'){
+    const p=PBY[sheet.id];const pt=partText(p,sheet.part);
+    const recOn=rec&&rec.target==='like';
+    return `<div class="backdrop" data-act="close-sheet"><div class="sheet" role="dialog" aria-modal="true" aria-label="Send a like" data-stop="1">
+      <h2>Like ${esc(p.name)}'s ${pt.label}</h2>
+      <div class="quote">${pt.q?`<span class="muted small" style="font-family:var(--sans)">${esc(pt.q)}</span><br>`:''}${esc(pt.quote)}</div>
+      <label class="lbl" for="like-note">Add a comment <span class="muted">(optional)</span></label>
+      <textarea id="like-note" placeholder="Say something about this ${pt.label}"></textarea>
+      <div style="height:14px"></div>
+      <button class="btn" data-act="send-like">Send like</button>
+      <div style="height:8px"></div>
+      <button class="btn secondary" data-act="close-sheet-btn">Cancel</button>
+    </div></div>`;
+  }
+  if(sheet.type==='report'){
+    const p=PBY[sheet.id];
+    return `<div class="backdrop" data-act="close-sheet"><div class="sheet" role="dialog" aria-modal="true" aria-label="Report or block" data-stop="1">
+      <h2>Report or block ${esc(p.name)}</h2><p class="muted" style="margin-bottom:14px">They won't be told. Blocking hides you from each other for good.</p>
+      ${['Fake profile or photos','College or salary looks false','Age looks misrepresented','Rude or inappropriate','Here for hookups only','Something else'].map(r=>`<button class="brand-opt" data-act="do-report">${esc(r)}</button>`).join('')}
+      <button class="btn secondary" data-act="do-block" style="margin-top:6px">Just block</button>
+    </div></div>`;
+  }
+  return '';
+}
+function renderOverlay(){
+  const p=PBY[overlay.id];const c=compat(S.me,p);
+  const petals=Array.from({length:18},(_,i)=>`<span class="petal" style="left:${(i*37)%100}%;animation-delay:${(i%6)*0.18}s"></span>`).join('');
+  return `<div class="match" role="dialog" aria-modal="true" aria-label="It's a match">${petals}
+    <h1>Shubh ho!</h1>
+    <p>You and ${esc(p.name)} liked each other. ${c.reasons[0]?esc(c.reasons[0])+'.':''} ${p.msgFirst?`${esc(p.name)} likes to send the first message, so keep an eye out.`:"We've already picked three date ideas in between you both."}</p>
+    <button class="btn" data-act="open-chat" data-id="${p.id}">See date ideas</button>
+    <button class="btn secondary" data-act="close-overlay">Keep exploring</button>
+  </div>`;
+}
+
+/* Matches & chat */
+function renderMatches(){
+  if(!S.matches.length)return `<div class="view empty"><h2>No matches yet</h2><p>Like a photo, answer or voice note that stands out. When they like you back, they'll show up here.</p><button class="btn" data-act="tab" data-tab="discover">Go to Discover</button></div>`;
+  return `<main class="view"><h2 class="section-title">Your matches</h2><p class="muted small">Matches expire after 7 days without a plan, so people actually meet.</p>
+  ${S.matches.slice().reverse().map(m=>{const p=PBY[m.id];const last=m.msgs[m.msgs.length-1];const status=m.plan?'Date planned':'Pick a date idea';
+    const lastTxt=last?(last.voice?'🎙️ Voice note':last.text):'';
+    return `<button class="list-item" data-act="open-chat" data-id="${p.id}"><span class="avatar">${photoHTML(p,0,true)}</span><span style="flex:1;min-width:0"><b>${esc(p.name)}${m.unread?' <span class="pill gold" style="font-size:11px;padding:2px 8px">New</span>':''}</b><span>${m.plan?'📅 ':'✨ '}${status}${lastTxt?'. '+esc(lastTxt):''}</span></span></button>`}).join('')}
+  </main>`;
+}
+function planCard(pl,i,chosen,p,locked){
+  return `<div class="plan ${chosen?'chosen':''}">
+    <h3>${esc(pl.title)}</h3>
+    <p class="when">${esc(pl.time)} in ${esc(CLUSTERS[pl.mid])}. About ${pl.forMe} min for you, ${pl.forThem} min for ${esc(p.name)}.</p>
+    <p class="whyline">${esc(pl.why)}</p>
+    ${pl.stops.map(s=>`<div class="stop"><span class="e" aria-hidden="true">${VENUE_EMOJI[s.type]}</span><span><b>${esc(s.name)}</b><small>${esc(s.blurb)}${s.cluster!=='out'?', '+esc(CLUSTERS[s.cluster]):''}${s.sample?' (sample venue)':''}</small></span><span class="cost">${inr(s.cost)}</span></div>`).join('')}
+    <div class="total"><span>Total for two</span><span>${inr(pl.total)}${pl.total<1500?' <span class="pill leaf" style="font-size:11px">Under budget</span>':''}</span></div>
+    ${chosen?'':`<div style="height:12px"></div><button class="btn" data-act="propose" data-i="${i}" ${locked?'disabled':''}>${locked?'Available after '+esc(p.name)+' says hello':'Propose this plan'}</button>`}
+  </div>`;
+}
+function renderChat(id){
+  const m=S.matches.find(x=>x.id===id);const p=PBY[id];
+  if(!m){S.chat=null;return renderMatches()}
+  m.unread=false;
+  const plans=plansFor(S.me,p);
+  const planSection=m.plan
+    ?`<h2 class="section-title">Your date${m.confirmed?'':' (waiting for '+esc(p.name)+')'}</h2>${planCard(m.plan,0,true,p)}
+      <button class="btn secondary" data-act="share-plan" data-id="${id}">Share plan with a friend</button>`
+    :`<h2 class="section-title">Plan your first date</h2><p class="muted small">Three ideas in between you both, picked from what you each enjoy. ₹1,500 to ₹2,000 for two.</p>
+      ${plans.map((pl,i)=>planCard(pl,i,false,p,m.waiting)).join('')}`;
+  const recOn=rec&&rec.target==='chat';
+  const lockNote=m.waiting?`<p class="note">${esc(p.name)} prefers to send the first message. You can reply and propose a date once ${p.gender==='Woman'?'she':'he'} says hello.</p>`:(S.me.privacy&&S.me.privacy.msgFirst&&!m.msgs.some(x=>x.from==='me'&&!x.ctx)?`<p class="note">You've chosen to message first. ${esc(p.name)} can reply once you say hello.</p>`:'');
+  return `<header class="topbar"><button class="back" data-act="back-chats">${ICON.back}Matches</button><span class="pill gold">${compat(S.me,p).score}% match</span></header>
+  <main class="view">
+    <div class="me-head"><span class="avatar">${photoHTML(p,0,true)}</span><div><h1>${esc(p.name)}</h1><p class="muted small">${p.age}, ${esc(p.job)}${p.verified?' <span class="pill leaf" style="font-size:11px;padding:2px 8px">✓ Verified</span>':''}</p></div></div>
+    ${planSection}
+    <h2 class="section-title">Chat</h2>
+    <p class="muted small">Voice notes get replies faster than text.</p>
+    ${lockNote}
+    <div class="msgs">${m.msgs.map((x,i)=>x.voice
+      ?`<div class="msg ${x.from} voice-msg">${x.ctx?`<span class="ctx">${esc(x.ctx)}</span>`:''}${playerHTML('chat|'+id+'|'+i,x.voice.secs)}${x.from==='them'&&x.text?`<span class="tx">${esc(x.text)}</span>`:''}</div>`
+      :`<div class="msg ${x.from}">${x.ctx?`<span class="ctx">${esc(x.ctx)}</span>`:''}${esc(x.text)}</div>`).join('')}</div>
+    ${m.waiting?'':recOn
+      ?`<div class="composer" style="align-items:center"><button class="mic on" data-act="rec-stop" aria-label="Stop and send">${ICON.stop}</button><span class="rectime" id="rec-time" style="font-size:22px">0:00</span><span class="muted small">Recording. Tap to send.</span></div>`
+      :`<div class="composer"><button class="mic" data-act="rec-start" data-target="chat" aria-label="Record a voice note">${ICON.mic}</button><input type="text" id="msg" placeholder="Or type a message" aria-label="Message"><button class="btn slim" data-act="send-msg">Send</button></div>`}
+    ${recErr&&!recOn?`<p class="err" role="alert">${esc(recErr)}</p>`:''}
+    <div class="safety"><b>Before you meet</b><ul><li>Keep first dates in public places, like the ones above.</li><li>Share your plan with a friend.</li><li>Arrange your own ride there and back.</li></ul></div>
+    <button class="report" data-act="report" data-id="${id}">Report or block ${esc(p.name)}</button>
+  </main>`;
+}
+function renderDates(){
+  const ds=S.matches.filter(m=>m.plan);
+  if(!ds.length)return `<div class="view empty"><h2>No dates planned yet</h2><p>When you match, pick one of the three date ideas and it will show up here.</p><button class="btn" data-act="tab" data-tab="${S.matches.length?'matches':'discover'}">${S.matches.length?'Plan a date with a match':'Find matches'}</button></div>`;
+  return `<main class="view"><h2 class="section-title">Upcoming dates</h2>
+    ${ds.map(m=>{const p=PBY[m.id];return `<p style="margin-top:18px;font-weight:600">With ${esc(p.name)} ${m.confirmed?'<span class="pill leaf">Confirmed</span>':'<span class="pill">Waiting for reply</span>'}</p>${planCard(m.plan,0,true,p)}<div class="row"><button class="btn secondary" data-act="open-chat" data-id="${p.id}">Open chat</button><button class="btn secondary" data-act="share-plan" data-id="${p.id}">Share with a friend</button></div>`}).join('')}
+    <div class="safety"><b>Safety first</b><ul><li>Meet in public for the first few dates.</li><li>Tell a friend where you're going and when.</li><li>Leave whenever you feel uncomfortable. No explanation needed.</li></ul></div>
+  </main>`;
+}
+function renderProfile(){
+  const me=S.me;const ms=me.myScores;const pv=me.privacy||{};const comp=completion(me);
+  const scoreBlock=ms&&ms.n>=MIN_RATINGS_TO_SHOW
+    ?`<div class="scorebar"><div class="score main"><b>${f1((ms.photo+ms.voice)/2)}</b><span>Overall, from ${ms.n} ratings</span></div><div class="score"><b>${f1(ms.photo)}</b><span>Photos</span></div><div class="score"><b>${f1(ms.voice)}</b><span>Voice</span></div></div>
+      <div class="vibes">${Object.entries(ms.vibes||{}).map(([v,k])=>`<span class="pill">${esc(v)} ${k}</span>`).join('')}</div>
+      <p class="hint">${pv.scorePublic?'Visible on your profile.':'Private. Only you can see this.'}</p>`
+    :`<p class="note">Your scores appear once ${MIN_RATINGS_TO_SHOW} people have rated you, so one or two ratings can't swing your number. So far: ${ms?ms.n:0}.</p>`;
+  const toggle=(k,label,help)=>`<button class="toggle" data-act="pv" data-k="${k}" aria-pressed="${!!pv[k]}"><span><b>${label}</b><span>${help}</span></span><i aria-hidden="true"></i></button>`;
+  return `<main class="view">
+    <div class="me-head"><span class="avatar">${photoHTML(me,0,true)}</span><div><h1>${esc(me.name)}, ${esc(me.age)}</h1><p class="muted small">🎓 ${esc(me.college)}, 💼 ${esc(me.pkg)}<br>${esc(CLUSTERS[me.cluster])}</p></div></div>
+    <div class="tags">${me.verified?'<span class="pill leaf">✓ Verified</span>':'<button class="pill" data-act="section" data-sec="selfie" style="border:0;cursor:pointer">Not verified. Verify now</button>'}</div>
+    ${comp.pct<100?`<h2 class="section-title">Complete your profile</h2>
+      <div class="meter" aria-label="${comp.pct}% complete"><i style="width:${comp.pct}%"></i></div><p class="hint">${comp.pct}% complete. Complete profiles get better matches and date plans.</p>
+      <div class="checklist">${comp.items.map(it=>it.done?`<div class="ci done"><span>✓</span>${esc(it.label)}</div>`:`<button class="ci" data-act="section" data-sec="${it.k==='voice'?'voice':it.k}"><span>+</span>${esc(it.label)}</button>`).join('')}</div>`:''}
+    <h2 class="section-title">Your ratings</h2>${scoreBlock}
+    <div class="voice big"><p class="q">🎙️ Tell me about yourself</p>${me.voice?playerHTML('me|x',me.voice.secs):'<p class="muted">No voice note yet.</p>'}</div>
+    <p class="small" style="font-weight:500;margin-top:18px">Your ${photoCount(me)} photos ${pv.photosLocked?'<span class="muted">(others see 3 until you match)</span>':''}</p>
+    <div class="pgrid">${Array.from({length:photoCount(me)},(_,i)=>`<div class="cell">${photoHTML(me,i)}</div>`).join('')}</div>
+    ${photoCount(me)<MAX_PHOTOS?'<div style="height:10px"></div><button class="btn secondary" data-act="section" data-sec="photos">Add or remove photos</button>':''}
+    <h2 class="section-title">Privacy & safety</h2>
+    ${toggle('scorePublic','Show my rating on my profile','When off, only you see your score. People can still rate you.')}
+    ${toggle('photosLocked','Show only 3 photos until we match','The rest unlock for your matches.')}
+    ${me.gender==='Woman'?toggle('msgFirst','I send the first message','Matches can reply only after you say hello.'):''}
+    ${toggle('verifiedOnly','Only show me verified profiles','Hides members who haven\'t done selfie verification.')}
+    <p class="hint">Screenshots are blocked in the mobile app, and your phone number is never shown.</p>
+    ${me.passions.length?`<div class="panel"><h3>Your passions</h3>${me.passions.map(id=>`<div class="passion"><b>${PASS[id].e} ${PASS[id].label}</b>${me.depth[id]?`<p>${esc(me.depth[id])}</p>`:''}</div>`).join('')}<button class="btn secondary slim" data-act="section" data-sec="passions">Edit</button></div>`:''}
+    ${me.foods.length?`<div class="panel"><h3>Your date taste</h3><div class="foodrow">${me.foods.map(f=>`<span class="food shared">${FOOD[f].e} ${FOOD[f].label}</span>`).join('')}</div><button class="btn secondary slim" data-act="section" data-sec="dates">Edit</button></div>`:''}
+    <div style="height:22px"></div>
+    <button class="btn secondary" data-act="reset">Reset the whole demo</button>
+  </main>`;
+}
+
+/* ---------- Actions ---------- */
+function toast(msg){toastMsg=msg;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{toastMsg='';render()},2800);render()}
+function currentProfile(){const q=queue();return q.length?q[0].p:null}
+function toTop(){window.scrollTo(0,0)}
+function afterRender(){render();toTop()}
+function sendVoice(v){
+  const m=S.matches.find(x=>x.id===S.chat);if(!m)return;
+  m.msgs.push({from:'me',voice:v});save();
+  scheduleReply(S.chat);
+}
+function scheduleReply(id){
+  const m=S.matches.find(x=>x.id===id);const n=m.msgs.filter(x=>x.from==='them').length;
+  setTimeout(()=>{const mm=S.matches.find(x=>x.id===id);if(!mm)return;const t=REPLIES[n%REPLIES.length];mm.msgs.push({from:'them',text:t,voice:{text:t,secs:secsOf(t)}});if(S.chat!==id)mm.unread=true;save();render()},1500);
+}
+document.addEventListener('click',e=>{
+  const el=e.target.closest('[data-act]');if(!el)return;
+  const act=el.dataset.act;
+  if(act==='close-sheet'&&e.target.closest('[data-stop]'))return;
+  switch(act){
+    case 'send-otp':{if(!/^[6-9]\d{9}$/.test(ob.d.phone)){ob.err='Enter a valid 10-digit Indian mobile number.';render();return}ob.d.otpSent=true;ob.err='';render();setTimeout(()=>{const i=document.getElementById('f-otp');if(i)i.focus()},30);break;}
+    case 'demo-selfie':runSelfieCheck();break;
+    case 'section':{const sec=el.dataset.sec;ob={step:null,section:sec,d:JSON.parse(JSON.stringify(S.me)),err:''};recErr='';stopAudio();playing=null;afterRender();break;}
+    case 'sec-cancel':stopRec();ob={step:0,d:blankDraft(),err:''};afterRender();break;
+    case 'sec-save':{const e2=validateKey(ob.section);if(e2){ob.err=e2;render();return}stopRec();if(ob.section==='personality')ob.d.big5Done=true;ob.d.maxTravel=+ob.d.maxTravel||45;S.me=ob.d;ob={step:0,d:blankDraft(),err:''};save();afterRender();toast('Profile updated.');break;}
+    case 'pv':{const k=el.dataset.k;S.me.privacy=S.me.privacy||{};S.me.privacy[k]=!S.me.privacy[k];save();render();break;}
+    case 'ob-next':{
+      if(ob.step===0){ob.step=1;ob.err='';afterRender();return}
+      const key=SIGNUP[ob.step-1];
+      if(key!=='selfie'){ob.err=validateKey(key);if(ob.err){render();return}}
+      if(key==='basics'&&!passesGate(ob.d)){ob.step='wait';afterRender();return}
+      stopRec();
+      if(ob.step===SIGNUP.length){const me=JSON.parse(JSON.stringify(ob.d));finishOnboarding(me);ob={step:0,d:blankDraft(),err:''};afterRender();return}
+      ob.step++;ob.err='';recErr='';afterRender();break;}
+    case 'ob-back':stopRec();ob.step=Math.max(0,ob.step-1);ob.err='';afterRender();break;
+    case 'ob-back-gate':ob.step=2;afterRender();break;
+    case 'ob-sample':finishOnboarding(JSON.parse(JSON.stringify(SAMPLE_ME)));afterRender();break;
+    case 'chip':{
+      const f=el.dataset.field,v=el.dataset.val;
+      if(el.dataset.multi==='1'){const arr=ob.d[f];const i=arr.indexOf(v);if(i>=0)arr.splice(i,1);else{if(f==='passions'&&arr.length>=5){ob.err='You can pick up to five passions.';render();return}arr.push(v)}}
+      else ob.d[f]=f==='maxTravel'?+v:v;
+      ob.err='';render();break;}
+    case 'demo-photos':{const d=ob.d;let k=d.photos.length;while(d.photos.length<MIN_PHOTOS)d.photos.push({art:k++});ob.err='';render();break;}
+    case 'rm-photo':ob.d.photos.splice(+el.dataset.i,1);render();break;
+    case 'rec-start':startRec(el.dataset.target);break;
+    case 'rec-stop':stopRec();break;
+    case 'demo-voice':{const t=`Hi, I'm ${ob.d.name||'new here'}. This is a demo voice note. In the real app, you'd hear me talk about what I do, what I love, and what I'm looking for.`;ob.d.voice={text:t,secs:secsOf(t)};recErr='';ob.err='';render();break;}
+    case 'play':togglePlay(el.dataset.key);break;
+    case 'tab':stopAudio();playing=null;S.tab=el.dataset.tab;S.chat=null;save();afterRender();break;
+    case 'focus':S.focus=el.dataset.id;stopAudio();playing=null;afterRender();break;
+    case 'rate':draftRating[el.dataset.k]=+el.dataset.v;render();break;
+    case 'vibe':{const v=el.dataset.v;const i=draftRating.tags.indexOf(v);if(i>=0)draftRating.tags.splice(i,1);else if(draftRating.tags.length<2)draftRating.tags.push(v);else{draftRating.tags.shift();draftRating.tags.push(v)}render();break;}
+    case 'submit-rating':{const p=currentProfile();if(!p)return;S.ratings[p.id]={photo:draftRating.photo,voice:draftRating.voice,tags:[...draftRating.tags]};save();toast(`Rating saved. ${p.name}'s average now includes yours.`);break;}
+    case 'like':{const p=currentProfile();if(!p)return;sheet={type:'like',id:p.id,part:el.dataset.part};render();setTimeout(()=>{const t=document.getElementById('like-note');if(t)t.focus()},50);break;}
+    case 'close-sheet':case 'close-sheet-btn':sheet=null;render();break;
+    case 'send-like':{
+      const p=PBY[sheet.id];const note=(document.getElementById('like-note')||{}).value||'';const pt=partText(p,sheet.part);
+      S.liked.push(p.id);S.likesLeft--;sheet=null;S.focus=null;stopAudio();playing=null;
+      const ctx=pt.label==='photo'?`Liked your ${pt.quote.toLowerCase()}`:`Liked your ${pt.label}: "${pt.quote.length>70?pt.quote.slice(0,70)+'…':pt.quote}"`;
+      if(p.likesYou){
+        S.matches.push({id:p.id,unread:true,waiting:!!p.msgFirst,msgs:[{from:'me',ctx,text:note.trim()||'❤'}],plan:null});overlay={id:p.id};save();render();
+        if(p.msgFirst)setTimeout(()=>{const mm=S.matches.find(x=>x.id===p.id);if(!mm)return;const t=`Hey ${S.me.name}! I liked your voice note too. Your date ideas look fun, pick one?`;mm.msgs.push({from:'them',text:t,voice:{text:t,secs:secsOf(t)}});mm.waiting=false;if(S.chat!==p.id)mm.unread=true;save();render()},4000);
+      }
+      else{save();toTop();toast(`Like sent to ${p.name}. You'll match if they like you back.`)}
+      break;}
+    case 'skip':{const p=currentProfile();if(p){S.passed.push(p.id);S.focus=null;stopAudio();playing=null;save();afterRender()}break;}
+    case 'report':{const id=el.dataset.id||(currentProfile()||{}).id;if(id){sheet={type:'report',id};render()}break;}
+    case 'do-report':case 'do-block':{
+      const id=sheet.id;sheet=null;S.matches=S.matches.filter(m=>m.id!==id);if(!S.passed.includes(id))S.passed.push(id);S.chat=null;S.focus=null;save();toTop();
+      toast(act==='do-report'?"Thanks. We'll review this report, and they've been blocked.":"Blocked. You won't see each other again.");break;}
+    case 'close-overlay':overlay=null;afterRender();break;
+    case 'open-chat':overlay=null;stopAudio();playing=null;S.chat=el.dataset.id;S.tab='matches';save();afterRender();break;
+    case 'back-chats':stopRec();stopAudio();playing=null;S.chat=null;S.tab='matches';save();afterRender();break;
+    case 'propose':{
+      const m=S.matches.find(x=>x.id===S.chat);const p=PBY[S.chat];const pl=plansFor(S.me,p)[+el.dataset.i];
+      m.plan=pl;m.confirmed=false;m.msgs.push({from:'me',ctx:'Proposed a date',text:`${pl.title}: ${pl.stops.map(s=>s.name).join(', then ')}. ${pl.time}.`});
+      save();render();const id=S.chat;
+      setTimeout(()=>{const mm=S.matches.find(x=>x.id===id);if(!mm)return;mm.confirmed=true;const t='This looks perfect. Saturday works for me!';mm.msgs.push({from:'them',text:t,voice:{text:t,secs:secsOf(t)}});if(S.chat!==id)mm.unread=true;save();render()},1600);
+      break;}
+    case 'send-msg':sendMsg();break;
+    case 'share-plan':{
+      const m=S.matches.find(x=>x.id===el.dataset.id);const p=PBY[m.id];
+      const txt=`Heads up: I'm meeting ${p.name} for "${m.plan.title}". ${m.plan.stops.map(s=>s.name).join(', then ')} in ${CLUSTERS[m.plan.mid]}. ${m.plan.time}.`;
+      if(navigator.share){navigator.share({text:txt}).catch(()=>{})}
+      else{try{navigator.clipboard.writeText(txt).then(()=>toast('Plan copied. Paste it to a friend.'),()=>toast('Copy this: '+txt))}catch(err){toast('Copy this: '+txt)}}
+      break;}
+    case 'reset':stopAudio();S=fresh();ob={step:0,d:blankDraft(),err:''};save();afterRender();break;
+    case 'reset-likes':S.likesLeft=10;save();render();break;
+    case 'widen':S.me.maxTravel=60;save();render();break;
+    case 'reset-seen':S.passed=[];S.liked=[];S.likesLeft=10;S.focus=null;save();render();break;
+  }
+});
+function sendMsg(){
+  const inp=document.getElementById('msg');if(!inp||!inp.value.trim())return;
+  const m=S.matches.find(x=>x.id===S.chat);if(!m)return;
+  m.msgs.push({from:'me',text:inp.value.trim()});save();render();
+  scheduleReply(S.chat);
+  setTimeout(()=>{const i=document.getElementById('msg');if(i)i.focus()},20);
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&e.target.id==='msg'){e.preventDefault();sendMsg()}
+  if(e.key==='Escape'&&(sheet||overlay)){sheet=null;overlay=null;render()}
+});
+document.addEventListener('input',e=>{
+  const t=e.target,f=t.dataset.ob;if(!f)return;
+  if(f==='big5'){ob.d.big5[+t.dataset.i]=+t.value;ob.d.big5Done=true}
+  else if(f==='phone'){t.value=t.value.replace(/\D/g,'').slice(0,10);ob.d.phone=t.value}
+  else if(f==='depth')ob.d.depth[t.dataset.k]=t.value;
+  else ob.d[f]=t.value;
+});
+document.addEventListener('change',async e=>{
+  if(e.target.id==='selfie-input'){if(e.target.files[0]){try{ob.d.selfie=await downscale(e.target.files[0])}catch(err){}runSelfieCheck()}return}
+  if(e.target.id!=='photo-input')return;
+  const files=[...e.target.files].slice(0,MAX_PHOTOS-ob.d.photos.length);
+  for(const f of files){try{ob.d.photos.push({src:await downscale(f)})}catch(err){}}
+  ob.err='';render();
+});
+if('speechSynthesis' in window)speechSynthesis.getVoices();
+render();
+</script>
+</body>
+</html>
